@@ -899,6 +899,49 @@ local arkasisGenius = { -- 518
 }
 
 
+-- update 45 - Fallen Banners 
+local vandorallensResonance = { -- 794
+["setName"] = GetSetName("|H1:item:212659:364:50:0:0:0:0:0:0:0:0:0:0:0:1:153:0:1:0:10000:0|h|h"),
+["abilityId"] = 235835,
+["origin"] = EPT_ORIGIN_DUNGEON,
+["cooldown"] = 6000,
+}
+
+local jerensisBladestorm = { -- 795
+["setName"] = GetSetName("|H1:item:212826:364:50:0:0:0:0:0:0:0:0:0:0:0:1:153:0:1:0:10000:0|h|h"),
+["abilityId"] = 235746,
+["origin"] = EPT_ORIGIN_DUNGEON,
+["cooldown"] = 15000,
+}
+
+local lucillasWindshield = { -- 796
+["setName"] = GetSetName("|H1:item:212991:364:50:0:0:0:0:0:0:0:0:0:0:0:1:153:0:1:0:10000:0|h|h"),
+["abilityId"] = 235885,
+["origin"] = EPT_ORIGIN_DUNGEON,
+["cooldown"] = 10000,
+}
+
+local fledglingsNest = { -- 799
+["setName"] = GetSetName("|H1:item:213383:364:50:0:0:0:0:0:0:0:0:0:0:0:1:154:0:1:0:10000:0|h|h"),
+["abilityId"] = 236355,
+["origin"] = EPT_ORIGIN_DUNGEON,
+["cooldown"] = 10000,
+}
+
+local noxiousBolder = { -- 800
+["setName"] = GetSetName("|H1:item:213550:364:50:0:0:0:0:0:0:0:0:0:0:0:1:154:0:1:0:10000:0|h|h"),
+["abilityId"] = 236745,
+["origin"] = EPT_ORIGIN_DUNGEON,
+["cooldown"] = 20000,
+}
+
+local orpheonTheTactician = { -- 801
+["setName"] = GetSetName("|H1:item:213680:364:50:0:0:0:0:0:0:0:0:0:0:0:1:67:0:1:0:10000:0|h|h"),
+["abilityId"] = 236654,
+["origin"] = EPT_ORIGIN_DUNGEON,
+["cooldown"] = 8000,
+}
+
 
 ---------------------
 -- RETURN FUNCTION --
@@ -1041,5 +1084,14 @@ function EPT.GetSetList()
     [736] = tarnishedNightmare,
     [614] = hexosWard,
     [518] = arkasisGenius,
+
+    -- Fallen Banners 
+    [794] = vandorallensResonance, 
+    [795] = jerensisBladestorm, 
+    [796] = lucillasWindshield, 
+    [799] = fledglingsNest,
+    [800] = noxiousBolder, 
+    [801] = orpheonTheTactician, 
     }
 end
+
