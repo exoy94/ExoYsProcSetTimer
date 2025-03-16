@@ -1,8 +1,8 @@
 ## Title: |c00FF00ExoY|rs Proc Set Timer
 ## Author: @|c00FF00ExoY|r94 (PC/EU)
 ## Description: Keeping track of various procable Sets.
-## APIVersion: 101042
-## Version: 2.12.1
+## APIVersion: 101045
+## Version: 2.13.0
 ## SavedVariables: EPTSV
 
 ## DependsOn: LibAddonMenu-2.0>=30
