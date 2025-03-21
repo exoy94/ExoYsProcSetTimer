@@ -1,0 +1,28 @@
+## Title: |c40FF00ExoY|rs ProcSet Timer
+## Author: @|c40FF00ExoY|r94 (PC/EU)
+## Description: ProcSetTracker
+## APIVersion: 101045
+## Version: 3.0.0 
+
+## DependsOn: LibAddonMenu-2.0
+## DependsOn: LibExoYsUtilities
+## DependsOn: LibSetDetection>=4
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc.
+; in the United States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+
+ProcSetData.lua
+
+lang/en.lua
+lang/$(language).lua 
+
+handler/procSetObj.lua 
+
+
+bindings.xml
+
+
+ExoYsProcSetTimer.lua
