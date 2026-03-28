@@ -942,7 +942,37 @@ local orpheonTheTactician = { -- 801
 ["cooldown"] = 8000,
 }
 
+-- update 47 - Feast of Shadows
+local stonehulkDomination = { -- 827
+["setName"] = GetSetName("|H0:item:218884:362:50:0:0:0:0:0:0:0:0:0:0:0:2048:159:0:0:0:10000:0|h|h"),
+["abilityId"] = 248789,
+["origin"] = EPT_ORIGIN_DUNGEON,
+["cooldown"] = 15000,
+["icon"] = GetItemLinkIcon("|H0:item:218884:362:50:0:0:0:0:0:0:0:0:0:0:0:2048:159:0:0:0:10000:0|h|h"),
+}
 
+local huntsmansWarmask = { -- 845
+["setName"] = GetSetName("|H1:item:223189:364:50:26582:370:50:0:0:0:0:0:0:0:0:1:0:0:1:0:7473:0|h|h"),
+["abilityId"] = 252048,
+["origin"] = EPT_ORIGIN_DUNGEON,
+["cooldown"] = 60000,
+}
+
+local sentry = { --89
+  ["setName"] = GetSetName("|H0:item:93904:364:50:0:0:0:11:0:0:0:0:0:0:0:2049:67:0:1:0:10000:0|h|h"),
+  ["abilityId"] = 117391, -- Sentry
+  ["origin"] = EPT_ORIGIN_PVP,
+  ["cooldown"] = 30000,
+}
+
+local gorethief = { --855
+  ["setName"] = GetSetName("|H0:item:93904:364:50:0:0:0:11:0:0:0:0:0:0:0:2049:67:0:1:0:10000:0|h|h"),
+  ["abilityId"] = 260047, -- Sentry
+  ["origin"] = EPT_ORIGIN_PVP,
+  ["type"] = "stackself", 
+  ["cooldown"] = 30000,
+  ["maxstack"] = 10,
+}
 ---------------------
 -- RETURN FUNCTION --
 ---------------------
@@ -1092,6 +1122,12 @@ function EPT.GetSetList()
     [799] = fledglingsNest,
     [800] = noxiousBolder, 
     [801] = orpheonTheTactician, 
+    -- Feast of Shadows
+    [827] = stonehulkDomination,
+    [845] = huntsmansWarmask,
+    [89] = sentry,
+    [855] = gorethief, 
     }
+
 end
 

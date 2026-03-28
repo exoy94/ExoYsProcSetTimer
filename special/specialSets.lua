@@ -101,6 +101,10 @@ local specialSets = {
   ["terminate"] = EPT.TerminateMythic,
   ["secondaryInd"] = EPT.SecondaryIndicatorMythic,
   },
+  [855] = { -- gorethief
+  ["terminate"] = EPT.TerminateMythic,
+  ["secondaryInd"] = EPT.SecondaryIndicatorMythic,
+  },
 
 }
 
@@ -152,6 +156,7 @@ function EPT:GetSecondaryIndicator(setId, win)
   elseif setId == 353 then return self:SecondaryIndicatorMythic(setId, win)
   elseif setId == 29 then return self:SecondaryIndicatorMythic(setId, win) --SergeantMail
   elseif setId == 764 then return self:SecondaryIndicatorMythic(setId, win)
+  elseif setId == 855 then return self:SecondaryIndicatorMythic(setId, win)
   else return nil
   end
 end

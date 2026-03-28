@@ -16,7 +16,7 @@ local EPT = EPT
 
 EPT.name = "ExoYsProcSetTimer"
 EPT.displayName = "|c40FF00ExoY|rs Proc Set Timer"
-EPT.version = "2.12.1"
+EPT.version = "2.14.0"
 EPT.author = "@|c00FF00ExoY|r94 (PC/EU)"
 EPT.event = GetEventManager()
 EPT.window = GetWindowManager()
