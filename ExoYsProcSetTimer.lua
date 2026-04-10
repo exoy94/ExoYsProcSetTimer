@@ -69,6 +69,7 @@ end
 --[[ -------------------- ]]
 
 local function Initialize() 
+
     --- Variable Definition
     EPT.debug = false 
     if ExoYsDevelopmentTool then 
@@ -77,18 +78,8 @@ local function Initialize()
 
     --- Saved Variables 
 
-    
-    --- Settings Menu 
-    local SettingsMenuParameter = {
-        name = EPT.name,
-        displayName = EPT.displayName,
-        version = EPT.version,
-        esoui = "info2783-ExoYsProcSetTimer.html",
-        profiles = nil, 
-        controls = nil,
-    } 
-    LibExoY.CreateSettingsMenu( SettingsMenuParameter ) 
 
+    EPT.ui = {}
 
     --- Event Registration
     LibExoY.RegisterCombatStart( OnCombatStart )
@@ -98,9 +89,15 @@ local function Initialize()
     
     LSD.RegisterEvent( LSD_EVENT_SET_CHANGE, EPT.name, OnSetChange, LSD_UNIT_TYPE_PLAYER )
     
+    --- Customizer 
+    EPT.ui.customizer = EPT.init.Customizer_Main() 
+
+
     --- Update Registration 
     EM:RegisterForUpdate( EPT.name, 5000, OnUpdate )
     
+
+    EPT.init = nil 
 end
 
 
