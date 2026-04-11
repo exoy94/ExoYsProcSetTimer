@@ -5,11 +5,6 @@ EPT.init = EPT.init or {}
 
 local WM = GetWindowManager() 
 
-local Customizer = { 
-    name = "ExoYsProcSetTimer_Customizer", 
-    displayId = 0,
-    isTemplate = true, 
-} 
 
 --[[ ---------------------- ]]
 --[[ -- Panel Definition -- ]]
@@ -29,14 +24,24 @@ local function Initialize_panel_general()
     return controls 
 end
 
---[[ ----------------------------- ]]
---[[ -- Initialization Function -- ]]
---[[ ----------------------------- ]]
+--[[ ----------------------- ]]
+--[[ -- Object Definition -- ]]
+--[[ ----------------------- ]]
 
-function EPT.init.Customizer_main( ) 
+local Customizer = {}
+
+function Customizer:New(  ) 
+    local UI = setmetatable({}, self) 
+    self.__index = self 
+
+    UI:CreateControls() 
+
+    return UI 
+end
+
+
+function Customizer:CreateControls() 
     local Controls = {}
-
-    local Prefix = Customizer.name
 
     local win = WM:CreateTopLevelWindow( Prefix.."_Window" ) 
     win:ClearAnchors() 
@@ -57,13 +62,18 @@ function EPT.init.Customizer_main( )
     title:SetText("ExoY's ProcSet Timer\nCustomizer")
     title:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
 
+    --- Display Demonstrator 
+    -- GetSettingsBasedOnSelection( template, id) 
+    Customier.demo = LibExoY.CustomTracker() --- todo
+
+
     Customizer.header = EPT.init.Customizer_header( Prefix.."_Header", ctrl, {offsetY = 50}) 
     Customizer.menu = LibExoY.CreateMenu( Prefix.."_Menu", ctrl, {offsetY = 100} ) 
 
     --- create option panels 
     for name, data in panelData do 
-        local func = EPT.init["Customizer_panel_"..name]
-        Customizer.panels[name] = func( Customizer )
+        local func = EPT.init["Initialize_panel_"..name]
+        Customizer.panel[name] = func( xxx )
         Customizer.menu:AddTab( name, {
             label = data.label, 
             texture = data.texture,  
@@ -71,10 +81,47 @@ function EPT.init.Customizer_main( )
         Customizer.menu[name]:AssignPanel( Customizer.panels[name] )
     end
 
-    --- Display Demonstrator 
-    Customier.demo = LibExoY.CreateTracker() --- todo 
+    ---ToDo concept / pseudo-code
+    local settings = SettingsOfCurrentSelection 
+    selectTheGeneralPanel 
+
+    Customizer.panel[name].ApplySettings( currentSettings )
+
+
+
+
+    --- ToDo ctrls: 
+    -- set selection window 
+
+    --- ToDo Notes
+    -- Setter function for settings controls based on current selection 
+    -- only need to be performed for current panel and when a panel is activated 
+    -- event/Getter: 
+        -- wenn a setting is changed apply it to the demo obj 
+        -- save it to the currently selected settings (template/ setId) 
 
 
 end
 
 
+
+
+function Customizer:OpenWindow( setId, isTemplate )
+    -- when isTemplate dann is setId = setType constant 
+
+    -- input tells the window how to initialize itself, 
+    -- with respect to which template/set to load 
+    -- this way i can move the setup of all the panels and stuff outside of the initialization end
+
+end
+
+function Customizer:CloseWindow() 
+    -- apply new settings to all relevant active tracker objeects 
+    -- 
+end
+
+
+
+function EPT.init.Customizer_main( ... )
+    return Customizer:New(...)     
+end

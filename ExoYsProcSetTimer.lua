@@ -90,7 +90,7 @@ local function Initialize()
     LSD.RegisterEvent( LSD_EVENT_SET_CHANGE, EPT.name, OnSetChange, LSD_UNIT_TYPE_PLAYER )
     
     --- Customizer 
-    EPT.ui.customizer = EPT.init.Customizer_Main() 
+    EPT.ui.customizer = EPT.init.Customizer_Main( EPT.name.."_UI_Customizer" ) 
 
 
     --- Update Registration 
