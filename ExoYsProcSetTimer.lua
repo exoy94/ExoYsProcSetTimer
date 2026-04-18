@@ -25,9 +25,9 @@ local function OnUpdate()
     end
 end
 
---[[ -------------------- ]]
---[[ -- Event Callback -- ]]
---[[ -------------------- ]]
+--[[ ----------------------- ]]
+--[[ -- Event CombatState -- ]]
+--[[ ----------------------- ]]
 
 local function OnCombatStart() 
 
@@ -39,18 +39,54 @@ local function OnCombatEnd()
 end
 
 
-local function OnSetChange( setId, changeType, _, _, activeType ) 
-    LibExoY.Debug("dev", EPT.debug, EPT.acronym, 
-        zo_strformat("SetChange: <<1>> (<<2>>), changeType = <<3>>; activeType = <<4>>", LSD.GetSetName(setId), setId, changeType, activeType)) 
+--[[ --------------------- ]]
+--[[ -- Event SetChange -- ]]
+--[[ --------------------- ]]
 
-    if changeType == LSD_CHANGE_TYPE_ACTIVATED then 
-        EPT.ProcSetHandler:Create(setId)
-    elseif 
-        changeType == LSD_CHANGE_TYPE_DEACTIVATED then 
-        EPT.ProcSetHandler:Destroy(setId)
+
+
+local function GetSetData( setId )  
+    local setData = EPT.database[setId] 
+    if setData.populated then return setData end 
+    --- Populate Set Data 
+    setData.texture = setData.texture or GetAbilityIcon( setData.abilityId )
+    -- Proc-Sets
+    if setData.setType == EPT_SET_TYPE_PROC then 
+        setData.duration = setData.duration or GetAbilityDuration( setData.abilityId )
+        setData.cooldown = setData.cooldown or GetAbilityCooldown( setData.abilityId )
+        
     end 
+    -- Group-Sets
+    if setData.setType == EPT_SET_TYPE_GROUP then 
+        setData.radius = setData.radius or GetAbilityDuration(  ) 
+    end 
+    return setData 
 end
 
+
+local function OnSetChange( setId, changeType, _, _, activeType )    
+    if EPT.debug then
+        local debugStr = zo_strformat("SetId = <<1>>, changeType = <<2>>; activeType = <<3>>", setId, changeType, activeType)
+        LibExoY.Debug( debugStr, {"EPT-SetChange"})
+    end
+    
+    if changeType == LSD_CHANGE_TYPE_ACTIVATED then 
+        local setData = GetSetData(setId) 
+    end 
+
+    if changeType == LSD_CHANGE_TYPE_DEACTIVATED then 
+
+    end 
+
+    if changeType == LSD_CHANGE_TYPE_UPDATED then 
+        
+    end
+end
+
+
+--[[ -------------------- ]]
+--[[ -- Initialization -- ]]
+--[[ -------------------- ]]
 
 local function OnPlayerActivated() 
 
@@ -62,39 +98,42 @@ local function OnInitialPlayerActivated()
 
 end
 
-
-
---[[ -------------------- ]]
---[[ -- Initialization -- ]]
---[[ -------------------- ]]
-
 local function Initialize() 
 
     --- Variable Definition
-    EPT.debug = false 
-    if ExoYsDevelopmentTool then 
-        EPT.debug = ExoYsDevelopmentTool.addonDebug[EPT.name] 
-    end
+    EPT.debug = true 
+    --if ExoYsDevelopmentTool then 
+    --    EPT.debug = ExoYsDevelopmentTool.addonDebug[EPT.name] 
+    --end
 
     --- Saved Variables 
 
 
     EPT.ui = {}
+    --EPT.ui.customizer = EPT.init.Customizer_Main( EPT.name.."_UI_Customizer" ) 
+    
+    --- Register with LibSetDetection 
+    local supportedSets = {}
+    for setId, _ in pairs( EPT.database) do
+        table.insert( supportedSets, setId) 
+    end
+    local resultLSD = LSD.RegisterEvent( LSD_EVENT_SET_CHANGE, EPT.name, OnSetChange, LSD_UNIT_TYPE_PLAYER, supportedSets)
+    if EPT.debug then 
+        if resultLSD == 0 then 
+            local debugStr = "Registration with LibSetDetection "..LibExoY.ColorString("successful", "green") 
+            LibExoY.Debug( debugStr, {"EPT-Init"}) 
+        else 
+            local debugStr = "Registration with LibSetDetection "..LibExoY.ColorString("failed", "red") 
+            LibExoY.Debug( debugStr, {"EPT-Init"}) 
+        end
+    end 
+    
 
-    --- Event Registration
-    LibExoY.RegisterCombatStart( OnCombatStart )
-    LibExoY.RegisterCombatEnd( OnCombatEnd ) 
-    LibExoY.RegisterForInitialPlayerActivated( OnInitialPlayerActivated )
-    LibExoY.RegisterForPlayerActivated( OnPlayerActivated ) 
-    
-    LSD.RegisterEvent( LSD_EVENT_SET_CHANGE, EPT.name, OnSetChange, LSD_UNIT_TYPE_PLAYER )
-    
-    --- Customizer 
-    EPT.ui.customizer = EPT.init.Customizer_Main( EPT.name.."_UI_Customizer" ) 
+
 
 
     --- Update Registration 
-    EM:RegisterForUpdate( EPT.name, 5000, OnUpdate )
+    --EM:RegisterForUpdate( EPT.name, 5000, OnUpdate )
     
 
     EPT.init = nil 

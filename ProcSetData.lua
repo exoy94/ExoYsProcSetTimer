@@ -1,7 +1,13 @@
 ExoYsProcSetTimer = ExoYsProcSetTimer or {}
 local EPT = ExoYsProcSetTimer
 
---- To be moved somewhere else: 
+local ProcSetData = {}
+EPT.database = ProcSetData
+
+--[[ ---------------------- ]]
+--[[ -- Global Constants -- ]]
+--[[ ---------------------- ]]
+
 EPT_SET_TYPE_PROC = 1
 EPT_SET_TYPE_GROUP = 2
 EPT_SET_TYPE_STACK = 3
@@ -16,50 +22,29 @@ function EPT.GetSetTypeList()
     }
 end
 
+--[[ ------------------------- ]]
+--[[ -- ProcSet Definitions -- ]]
+--[[ ------------------------- ]]
 
-local ProcSetData = {}
+--- Guidelines Perfected/Non-Perfected 
+--      + only include the setId of the non-perfected version 
+--      + procs should be identical, the difference should only be a stat-line 
+--      + 
 
-do --- overland sets 
-
-    ProcSetData[101] = {    -- actual set name for easy find  
-        itemlink = "", 
-        setType = EPT_SET_TYPE_GROUP, 
-        -- here more type specific properties
-    } 
-
-end 
+--- Guidelines ItemLink
+--      + Quality: Gold (except mysticals) 
+--      + No Enchantment 
+--      + CP160     
+--      + Heavy (if there are multiple weights)     
+--      + Specific Piece:  
+--          + Chest 
 
 
 do --- U31 (DLC - Waking Flame)
     ProcSetData[602] = {    -- Crimson Oath's Rive
-        ["itemlink]"] = "|H0:item:177430:364:50:0:0:0:0:0:0:0:0:0:0:0:1:123:0:1:0:10000:0|h|h", 
-
+        itemLink = "|H0:item:177430:364:50:0:0:0:0:0:0:0:0:0:0:0:1:123:0:1:0:10000:0|h|h", 
+        setType = EPT_SET_TYPE_PROC, 
+        abilityId = 159291,
     }
-
-
 end 
 
---[[ ---------------------- ]]
---[[ -- Access Functions -- ]]
---[[ ---------------------- ]]
-
-function EPT.IsSetSupported( setId ) 
-
-end
-
-function EPT.GetSetEntry( setId ) 
-    return ProcSetData[setId] 
-end
-
-
-function EPT.GetProcSetData() 
-    return ProcSetData
-end
-
-
-local crimsonOathRive = { --602
-  ["setName"] = GetSetName("|H0:item:177430:364:50:0:0:0:0:0:0:0:0:0:0:0:1:123:0:1:0:10000:0|h|h"),
-  ["abilityId"] = 159291, --152288 debuff
-  ["cooldown"] = 12000,
-  ["origin"] = EPT_ORIGIN_DUNGEON,
-}
