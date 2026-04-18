@@ -30,6 +30,36 @@ do --- overland sets
 end 
 
 
+do --- U31 (DLC - Waking Flame)
+    ProcSetData[602] = {    -- Crimson Oath's Rive
+        ["itemlink]"] = "|H0:item:177430:364:50:0:0:0:0:0:0:0:0:0:0:0:1:123:0:1:0:10000:0|h|h", 
+
+    }
+
+
+end 
+
+--[[ ---------------------- ]]
+--[[ -- Access Functions -- ]]
+--[[ ---------------------- ]]
+
+function EPT.IsSetSupported( setId ) 
+
+end
+
+function EPT.GetSetEntry( setId ) 
+    return ProcSetData[setId] 
+end
+
+
 function EPT.GetProcSetData() 
     return ProcSetData
 end
+
+
+local crimsonOathRive = { --602
+  ["setName"] = GetSetName("|H0:item:177430:364:50:0:0:0:0:0:0:0:0:0:0:0:1:123:0:1:0:10000:0|h|h"),
+  ["abilityId"] = 159291, --152288 debuff
+  ["cooldown"] = 12000,
+  ["origin"] = EPT_ORIGIN_DUNGEON,
+}
