@@ -27,11 +27,11 @@ local function OnSetChange( setId, changeType, _, _, activeType )
     
     if changeType == LSD_CHANGE_TYPE_ACTIVATED then 
         local setData = GetSetData(setId) 
-        EPT.handler:AssignObj( "SetTracker", setId ) 
+        EPT.handler:AssignObjects( setId ) 
     end 
 
     if changeType == LSD_CHANGE_TYPE_DEACTIVATED then 
-        EPT.handler:ReleaseObj( "SetTracker", setId ) 
+        EPT.handler:ReleaseObjects( setId ) 
     end 
 
     if changeType == LSD_CHANGE_TYPE_UPDATED then 

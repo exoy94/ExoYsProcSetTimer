@@ -88,3 +88,11 @@ function SetTracker:CleanUp()
     --end
     --- cant do this, because i would delete the indicator and such 
 end
+
+
+
+function SetTracker:CallMetaMethod( method, ... )
+    local mt = getmetatable(self) 
+    local MetaMethod = mt.__index[method]  
+    return MetaMethod(self, ...) 
+end
