@@ -49,17 +49,24 @@ local function GetSetData( setId )
     local setData = EPT.database[setId] 
     if setData.populated then return setData end 
     --- Populate Set Data 
+    -- setName 
+    if not setData.setName then 
+        local _, setName, _, _, _, _ = GetItemLinkSetInfo(setData.itemLink)
+        setData.setName = zo_strformat( SI_ABILITY_NAME, setName )        
+    end  
+    -- texture 
     setData.texture = setData.texture or GetAbilityIcon( setData.abilityId )
+    setData.duration = setData.duration or GetAbilityDuration( setData.abilityId )
+    setData.cooldown = setData.cooldown or GetAbilityCooldown( setData.abilityId )
     -- Proc-Sets
     if setData.setType == EPT_SET_TYPE_PROC then 
-        setData.duration = setData.duration or GetAbilityDuration( setData.abilityId )
-        setData.cooldown = setData.cooldown or GetAbilityCooldown( setData.abilityId )
-        
+
     end 
     -- Group-Sets
     if setData.setType == EPT_SET_TYPE_GROUP then 
-        setData.radius = setData.radius or GetAbilityDuration(  ) 
+        setData.radius = setData.radius or GetAbilityRadius( setData.abilityId )
     end 
+    setData.populated = true
     return setData 
 end
 
@@ -72,10 +79,11 @@ local function OnSetChange( setId, changeType, _, _, activeType )
     
     if changeType == LSD_CHANGE_TYPE_ACTIVATED then 
         local setData = GetSetData(setId) 
+        EPT.setTracker:AssignObj( setId ) 
     end 
 
     if changeType == LSD_CHANGE_TYPE_DEACTIVATED then 
-
+        EPT.setTracker:ReleaseObj( setId ) 
     end 
 
     if changeType == LSD_CHANGE_TYPE_UPDATED then 
@@ -109,8 +117,13 @@ local function Initialize()
     --- Saved Variables 
 
 
+    --- Tables 
     EPT.ui = {}
     --EPT.ui.customizer = EPT.init.Customizer_Main( EPT.name.."_UI_Customizer" ) 
+    
+    EPT.handler = EPT.init.HandlerConstructor()  
+    EPT.handler.setTracker = EPT.init.SetTrackerConstructor 
+
     
     --- Register with LibSetDetection 
     local supportedSets = {}

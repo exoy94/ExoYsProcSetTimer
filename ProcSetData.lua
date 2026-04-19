@@ -22,6 +22,16 @@ function EPT.GetSetTypeList()
     }
 end
 
+EPT_STACK_TYPE_SELF = 1
+EPT_STACK_TYPE_TARGET = 2 
+
+function EPT.GetStackTypeList() 
+    return {
+        EPT_STACK_TYPE_SELF = "self", 
+        EPT_STACK_TYPE_TARGET = "target", 
+    }
+end 
+
 --[[ ------------------------- ]]
 --[[ -- ProcSet Definitions -- ]]
 --[[ ------------------------- ]]
@@ -44,7 +54,7 @@ do --- U31 (DLC - Waking Flame)
     ProcSetData[602] = {    -- Crimson Oath's Rive
         itemLink = "|H0:item:177430:364:50:0:0:0:0:0:0:0:0:0:0:0:1:123:0:1:0:10000:0|h|h", 
         setType = EPT_SET_TYPE_PROC, 
-        abilityId = 159291,
+        abilityId = 159288 -- legacy: 159291,
     }
 end 
 
