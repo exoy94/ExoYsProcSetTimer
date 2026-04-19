@@ -13,62 +13,10 @@ EPT.displayName = "ExoY's ProcSet-Timer"
 EPT.version = "3.0.0"
 
 
---[[ --------------------- ]]
---[[ -- Update Callback -- ]]
---[[ --------------------- ]]
 
-local function OnUpdate() 
-    local currentGameTimeMS = GetGameTimeMilliseconds() 
-    for setId, handler in pairs(EPT.ProcSetHandler.list) do 
-        d( zo_strformat("OnUpdate for <<1>> (<<2>>)", LSD.GetSetName(setId), setId))
-        handler:OnTimeUpdate( currentGameTimeMS ) 
-    end
-end
-
---[[ ----------------------- ]]
---[[ -- Event CombatState -- ]]
---[[ ----------------------- ]]
-
-local function OnCombatStart() 
-
-end
-
-
-local function OnCombatEnd() 
-
-end
-
-
---[[ --------------------- ]]
---[[ -- Event SetChange -- ]]
---[[ --------------------- ]]
-
-
-
-local function GetSetData( setId )  
-    local setData = EPT.database[setId] 
-    if setData.populated then return setData end 
-    --- Populate Set Data 
-    -- setName 
-    if not setData.setName then 
-        local _, setName, _, _, _, _ = GetItemLinkSetInfo(setData.itemLink)
-        setData.setName = zo_strformat( SI_ABILITY_NAME, setName )        
-    end  
-    -- texture 
-    setData.texture = setData.texture or GetAbilityIcon( setData.abilityId )
-    setData.duration = setData.duration or GetAbilityDuration( setData.abilityId )
-    setData.cooldown = setData.cooldown or GetAbilityCooldown( setData.abilityId )
-    -- Proc-Sets
-    if setData.setType == EPT_SET_TYPE_PROC then 
-
-    end 
-    -- Group-Sets
-    if setData.setType == EPT_SET_TYPE_GROUP then 
-        setData.radius = setData.radius or GetAbilityRadius( setData.abilityId )
-    end 
-    setData.populated = true
-    return setData 
-end
+--[[ ------------ ]]
+--[[ -- Events -- ]]
+--[[ ------------ ]]
 
 
 local function OnSetChange( setId, changeType, _, _, activeType )    
@@ -79,11 +27,11 @@ local function OnSetChange( setId, changeType, _, _, activeType )
     
     if changeType == LSD_CHANGE_TYPE_ACTIVATED then 
         local setData = GetSetData(setId) 
-        EPT.setTracker:AssignObj( setId ) 
+        EPT.handler:AssignObj( "SetTracker", setId ) 
     end 
 
     if changeType == LSD_CHANGE_TYPE_DEACTIVATED then 
-        EPT.setTracker:ReleaseObj( setId ) 
+        EPT.handler:ReleaseObj( "SetTracker", setId ) 
     end 
 
     if changeType == LSD_CHANGE_TYPE_UPDATED then 
@@ -96,15 +44,6 @@ end
 --[[ -- Initialization -- ]]
 --[[ -------------------- ]]
 
-local function OnPlayerActivated() 
-
-end 
-
-
-local function OnInitialPlayerActivated() 
-
-
-end
 
 local function Initialize() 
 
@@ -116,13 +55,15 @@ local function Initialize()
 
     --- Saved Variables 
 
-
-    --- Tables 
     EPT.ui = {}
     --EPT.ui.customizer = EPT.init.Customizer_Main( EPT.name.."_UI_Customizer" ) 
+
+    --- Handler  
+    local classes = { 
+        ["SetTracker"] = EPT.init.Constructor_SetTracker 
+    }
     
-    EPT.handler = EPT.init.HandlerConstructor()  
-    EPT.handler.setTracker = EPT.init.SetTrackerConstructor 
+    EPT.handler = EPT.init.Constructor_Handler()  
 
     
     --- Register with LibSetDetection 
@@ -139,15 +80,7 @@ local function Initialize()
             local debugStr = "Registration with LibSetDetection "..LibExoY.ColorString("failed", "red") 
             LibExoY.Debug( debugStr, {"EPT-Init"}) 
         end
-    end 
-    
-
-
-
-
-    --- Update Registration 
-    --EM:RegisterForUpdate( EPT.name, 5000, OnUpdate )
-    
+    end  
 
     EPT.init = nil 
 end
