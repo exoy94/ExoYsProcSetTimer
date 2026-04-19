@@ -26,12 +26,11 @@ local function OnSetChange( setId, changeType, _, _, activeType )
     end
     
     if changeType == LSD_CHANGE_TYPE_ACTIVATED then 
-        local setData = GetSetData(setId) 
-        EPT.handler:AssignObjects( setId ) 
+        EPT.setTracker:Activate( setId ) 
     end 
 
     if changeType == LSD_CHANGE_TYPE_DEACTIVATED then 
-        EPT.handler:ReleaseObjects( setId ) 
+        EPT.setTracker:Deactivate( setId ) 
     end 
 
     if changeType == LSD_CHANGE_TYPE_UPDATED then 
@@ -58,12 +57,20 @@ local function Initialize()
     EPT.ui = {}
     --EPT.ui.customizer = EPT.init.Customizer_Main( EPT.name.."_UI_Customizer" ) 
 
-    --- Handler  
-    local classes = { 
-        ["SetTracker"] = EPT.init.Constructor_SetTracker 
-    }
-    
-    EPT.handler = EPT.init.Constructor_Handler()  
+      
+    --EPT.setTrackerClass.main 
+    --EPT.setTrackerClass.proc
+    --EPT.setTrackerClass.handler 
+    --EPT.setTrackerClass.unique    -- tables with all the unique sets, using setId as key 
+
+    --- SetTracker 
+    local SetTracker = EPT.setTrackerClass 
+    EPT.setTracker = SetTracker.handler:New() 
+    -- subclasses 
+    EPT.setTracker.classes.proc = SetTracker.main:New( SetTracker["proc"] )
+    EPT.setTracker.unique = SetTracker.unique
+    EPT.setTrackerClass = nil 
+
 
     
     --- Register with LibSetDetection 
