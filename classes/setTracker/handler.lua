@@ -38,9 +38,10 @@ end
 function SetTrackerHandler:InitializeObj( setId )
 
     local setType = EPT.GetSetType( setId )  
-    local obj = self.classes[ setType ]:New( self.uniqueSets[setId] )
+    local obj = self.classes[ setType ]:New( self.uniqueSets[setId], setId )
     
-    obj:BasicInitialization( setId ) 
+    obj:Initialization( setId )
+
 
     self.objectRegistry[setId] = obj
     -- get setData 

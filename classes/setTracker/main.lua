@@ -1,5 +1,7 @@
 ExoYsProcSetTimer = ExoYsProcSetTimer or {}
 local EPT = ExoYsProcSetTimer 
+local LSD = LibSetDetection
+local LibExoY = LibExoYsUtilities
 
 local SetTrackerMain = {}
 EPT.setTrackerClass = EPT.setTrackerClass or {}
@@ -11,8 +13,18 @@ function SetTrackerMain:New( Obj, setId )
     setmetatable(Obj or {}, self)
     self.__index = self 
 
-    self.setId = setId 
-    self.setName = EPT.GetSetName( setId ) 
+    if setId then 
+        self.setId = setId
+        
+        --- Populate Set Data (General Properties) 
+        local setData = EPT.database[setId] 
+        setData.setName = LSD.GetSetName( setId ) 
+
+
+        self.setData = setData 
+
+        self.indicator = LibExoY.NewIndicator( )
+    end
 
     return Obj
 end
