@@ -19,6 +19,7 @@ function SetTrackerHandler:New()
 end
 
 
+
 function SetTrackerHandler:ActivateObj( setId )
 
     if not self.objects[setId] then 
@@ -33,6 +34,7 @@ function SetTrackerHandler:ActivateObj( setId )
 
     -- chose position 
 end 
+
 
 
 function SetTrackerHandler:InitializeObj( setId )
@@ -50,6 +52,7 @@ function SetTrackerHandler:InitializeObj( setId )
     -- create appropriate obj
     -- get saved variables 
 end
+
 
 
 function SetTrackerHandler:DeactivateObj( setId ) 

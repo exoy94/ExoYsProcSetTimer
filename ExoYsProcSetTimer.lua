@@ -7,9 +7,7 @@ local LSD = LibSetDetection
 
 local EPT = ExoYsProcSetTimer 
 
-EPT.acronym = "EPT"
 EPT.name = "ExoYsProcSetTimer"
-EPT.displayName = "ExoY's ProcSet-Timer"
 EPT.version = "3.0.0"
 
 
@@ -24,13 +22,13 @@ local function OnSetChange( setId, changeType, _, _, activeType )
         local debugStr = zo_strformat("SetId = <<1>>, changeType = <<2>>; activeType = <<3>>", setId, changeType, activeType)
         LibExoY.Debug( debugStr, {"EPT-SetChange"})
     end
-    
+    -- supported set was equipped 
     if changeType == LSD_CHANGE_TYPE_ACTIVATED then 
-        EPT.setTracker:Activate( setId ) 
+        EPT.setTracker:ActivateObj( setId ) 
     end 
-
+    -- supported set was unequipped 
     if changeType == LSD_CHANGE_TYPE_DEACTIVATED then 
-        EPT.setTracker:Deactivate( setId ) 
+        EPT.setTracker:DeactivateObj( setId ) 
     end 
 
     if changeType == LSD_CHANGE_TYPE_UPDATED then 
@@ -54,26 +52,22 @@ local function Initialize()
 
     --- Saved Variables 
 
-    EPT.ui = {}
-    --EPT.ui.customizer = EPT.init.Customizer_Main( EPT.name.."_UI_Customizer" ) 
 
-      
-    --EPT.setTrackerClass.main 
-    --EPT.setTrackerClass.proc
-    --EPT.setTrackerClass.handler 
-    --EPT.setTrackerClass.unique    -- tables with all the unique sets, using setId as key 
+    --- User Interace 
+    EPT.ui = {}
 
     --- SetTracker 
-    local SetTracker = EPT.setTrackerClass 
+    -- initialize handler and classes 
+    local SetTracker = EPT.setTrackerClass  -- distribution table for initializatino 
     EPT.setTracker = SetTracker.handler:New() 
-    -- subclasses 
+    -- define class for each set-type (main is superclass)
     EPT.setTracker.classes.proc = SetTracker.main:New( SetTracker["proc"] )
-    EPT.setTracker.unique = SetTracker.unique
-    EPT.setTrackerClass = nil 
-
-
+    -- table for sets with unique behavior ()
+    EPT.setTracker.unique = SetTracker.unique  
+    EPT.setTrackerClass = nil   -- clean up distribution table
     
     --- Register with LibSetDetection 
+    -- list of sets supported by EPT for LSD event filter
     local supportedSets = {}
     for setId, _ in pairs( EPT.database) do
         table.insert( supportedSets, setId) 
@@ -89,7 +83,6 @@ local function Initialize()
         end
     end  
 
-    EPT.init = nil 
 end
 
 

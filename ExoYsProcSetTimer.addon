@@ -19,10 +19,12 @@ ProcSetData.lua
 lang/en.lua
 lang/$(language).lua 
 
-handler/procSetObj.lua 
+classes/setTracker/handler.lua
+classes/setTracker/main.lua
+classes/setTracker/proc.lua 
 
+ui/customizer.lua
 
 bindings.xml
-
 
 ExoYsProcSetTimer.lua
