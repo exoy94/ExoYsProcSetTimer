@@ -11,7 +11,7 @@ function SetTrackerHandler:New()
     self.__index = self  
 
     obj.classes = {}
-    obj.uniqueSets = {}
+    obj.specialSets = {}
     obj.objectRegistry = {}    -- list of all already created set tracker objects 
     obj.activeObjects = {}    -- list of currently active tracker 
 
@@ -37,11 +37,17 @@ end
 
 
 
+
+
+
+
 function SetTrackerHandler:InitializeObj( setId )
 
     local setType = EPT.GetSetType( setId )  
     local obj = self.classes[ setType ]:New( self.uniqueSets[setId], setId )
     
+    --- class specific initialization
+
     obj:Initialization( setId )
 
 
@@ -56,7 +62,10 @@ end
 
 
 function SetTrackerHandler:DeactivateObj( setId ) 
-    local obj = self.objects[setId] 
+    local obj = self.objects[setId]
+    
+
+    self.activeObjects[setId] = nil 
     -- remove fragments
     -- unregister events 
     -- remove from active list 

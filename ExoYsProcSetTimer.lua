@@ -60,10 +60,10 @@ local function Initialize()
     -- initialize handler and classes 
     local SetTracker = EPT.setTrackerClass  -- distribution table for initializatino 
     EPT.setTracker = SetTracker.handler:New() 
-    -- define class for each set-type (main is superclass)
+    -- define subclass for each set-type (main is superclass)
     EPT.setTracker.classes.proc = SetTracker.main:New( SetTracker["proc"] )
-    -- table for sets with unique behavior ()
-    EPT.setTracker.unique = SetTracker.unique  
+    -- table for sets with special behavior to define individual classes instances
+    EPT.setTracker.specialSets = SetTracker.unique  
     EPT.setTrackerClass = nil   -- clean up distribution table
     
     --- Register with LibSetDetection 

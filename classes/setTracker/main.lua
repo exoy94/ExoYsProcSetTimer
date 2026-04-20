@@ -15,15 +15,14 @@ function SetTrackerMain:New( Obj, setId )
 
     if setId then 
         self.setId = setId
-        
         --- Populate Set Data (General Properties) 
         local setData = EPT.database[setId] 
         setData.setName = LSD.GetSetName( setId ) 
         setData.texture = setData.texture or GetAbilityIcon( setData.abilityId )
-
         self.setData = setData 
 
-        self.indicator = LibExoY.NewIndicator( )
+        local indicatorName = "EPT_SetTracker"..tostring(setId).."_Indicator"
+        self.indicator = LibExoY.NewIndicator( indicatorName )
     end
 
     return Obj
