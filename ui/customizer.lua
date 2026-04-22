@@ -82,10 +82,10 @@ function Customizer:CreateControls()
     end
 
     ---ToDo concept / pseudo-code
-    local settings = SettingsOfCurrentSelection 
-    selectTheGeneralPanel 
+    --local settings = SettingsOfCurrentSelection 
+    --selectTheGeneralPanel 
 
-    Customizer.panel[name].ApplySettings( currentSettings )
+    --Customizer.panel[name].ApplySettings( currentSettings )
 
 
 

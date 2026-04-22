@@ -11,9 +11,8 @@ function SetTrackerHandler:New()
     self.__index = self  
 
     obj.classes = {}
-    obj.specialSets = {}
     obj.objectRegistry = {}    -- list of all already created set tracker objects 
-    obj.activeObjects = {}    -- list of currently active tracker 
+    obj.activeObjects = {}    -- list of currently active tracke
 
     return obj 
 end
@@ -22,7 +21,7 @@ end
 
 function SetTrackerHandler:ActivateObj( setId )
 
-    if not self.objects[setId] then 
+    if not self.objectRegistry[setId] then 
         self:InitializeObj( setId ) 
     end 
 
@@ -44,11 +43,11 @@ end
 function SetTrackerHandler:InitializeObj( setId )
 
     local setType = EPT.GetSetType( setId )  
-    local obj = self.classes[ setType ]:New( self.uniqueSets[setId], setId )
+    local obj = self.classes[ setType ]:New( self.specialSets[setId], setId )
     
     --- class specific initialization
 
-    obj:Initialization( setId )
+    obj:Initialize()
 
 
     self.objectRegistry[setId] = obj

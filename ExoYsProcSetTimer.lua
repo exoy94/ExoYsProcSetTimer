@@ -63,13 +63,13 @@ local function Initialize()
     -- define subclass for each set-type (main is superclass)
     EPT.setTracker.classes.proc = SetTracker.main:New( SetTracker["proc"] )
     -- table for sets with special behavior to define individual classes instances
-    EPT.setTracker.specialSets = SetTracker.unique  
+    EPT.setTracker.specialSets = SetTracker.specialSets or {}
     EPT.setTrackerClass = nil   -- clean up distribution table
     
     --- Register with LibSetDetection 
     -- list of sets supported by EPT for LSD event filter
     local supportedSets = {}
-    for setId, _ in pairs( EPT.database) do
+    for setId, _ in pairs( EPT.GetDatabase() ) do
         table.insert( supportedSets, setId) 
     end
     local resultLSD = LSD.RegisterEvent( LSD_EVENT_SET_CHANGE, EPT.name, OnSetChange, LSD_UNIT_TYPE_PLAYER, supportedSets)

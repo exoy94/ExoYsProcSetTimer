@@ -10,24 +10,25 @@ EPT.setTrackerClass.main = SetTrackerMain
 
 
 function SetTrackerMain:New( Obj, setId ) 
-    setmetatable(Obj or {}, self)
+    Obj = setmetatable(Obj or {}, self)
     self.__index = self 
 
+
+    
     if setId then 
-        self.setId = setId
+        Obj.setId = setId
+        Obj.name = "EPT_SetTracker"..tostring(setId)
         --- Populate Set Data (General Properties) 
-        local setData = EPT.database[setId] 
+        local setData = EPT.GetSetData(setId) 
         setData.setName = LSD.GetSetName( setId ) 
         setData.texture = setData.texture or GetAbilityIcon( setData.abilityId )
-        self.setData = setData 
+        Obj.setData = setData 
 
-        local indicatorName = "EPT_SetTracker"..tostring(setId).."_Indicator"
-        self.indicator = LibExoY.NewIndicator( indicatorName )
+        --self.indicator = LibExoY.NewIndicator( Obj.name.."_Indicator" )
     end
 
     return Obj
 end
-
 
 
 function SetTrackerMain:CallMetaMethod( method, ... )

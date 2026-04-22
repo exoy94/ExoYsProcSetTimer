@@ -4,6 +4,16 @@ local EPT = ExoYsProcSetTimer
 local ProcSetData = {}
 EPT.database = ProcSetData
 
+function EPT.GetDatabase() 
+    return ProcSetData
+end
+
+function EPT.GetSetData( setId ) 
+    return ProcSetData[setId]
+end
+
+
+
 --[[ ---------------------- ]]
 --[[ -- Global Constants -- ]]
 --[[ ---------------------- ]]
@@ -53,12 +63,19 @@ end
 --      + Specific Piece:  
 --          + Chest 
 
+--- Guidelines abilityId  
+--      + used for dynamically filling the setData
+--      + setType "proc" = procId
+--      + setType "stack" = stackId
+--      + setType "group" = procId 
+--      + setType "toggle" = 
+
 
 do --- U31 (DLC - Waking Flame)
     ProcSetData[602] = {    -- Crimson Oath's Rive
         itemLink = "|H0:item:177430:364:50:0:0:0:0:0:0:0:0:0:0:0:1:123:0:1:0:10000:0|h|h", 
         setType = EPT_SET_TYPE_PROC, 
-        abilityId = 159288 -- legacy: 159291,
+        abilityId = 159288, -- legacy: 159291,
     }
 end 
 
