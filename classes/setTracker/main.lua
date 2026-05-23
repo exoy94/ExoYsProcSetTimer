@@ -4,7 +4,7 @@ local LSD = LibSetDetection
 local LibExoY = LibExoYsUtilities
 
 local SetTrackerMain = {}
-EPT.setTrackerClass = EPT.setTrackerClass or {}
+EPT.setTrackerClass = EPT.setTrackerClass or {} 
 EPT.setTrackerClass.main = SetTrackerMain 
 
 
@@ -13,18 +13,13 @@ function SetTrackerMain:New( Obj, setId )
     Obj = setmetatable(Obj or {}, self)
     self.__index = self 
 
-
-    
     if setId then 
-        Obj.setId = setId
-        Obj.name = "EPT_SetTracker"..tostring(setId)
-        --- Populate Set Data (General Properties) 
-        local setData = EPT.GetSetData(setId) 
+        Obj.setId = setId 
+        Obj.name = "EPT_SetTracker_"..tostring(setId)
+        --- Populate Set Data (Generic Properties) 
+        local setData = EPT.GetSetData( setId ) 
         setData.setName = LSD.GetSetName( setId ) 
-        setData.texture = setData.texture or GetAbilityIcon( setData.abilityId )
         Obj.setData = setData 
-
-        --self.indicator = LibExoY.NewIndicator( Obj.name.."_Indicator" )
     end
 
     return Obj

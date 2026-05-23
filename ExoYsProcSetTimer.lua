@@ -1,15 +1,14 @@
 ExoYsProcSetTimer = ExoYsProcSetTimer or {}
-
+local EPT = ExoYsProcSetTimer 
 
 local EM = GetEventManager()
 local LibExoY = LibExoYsUtilities
 local LSD = LibSetDetection
 
-local EPT = ExoYsProcSetTimer 
+
 
 EPT.name = "ExoYsProcSetTimer"
 EPT.version = "3.0.0"
-
 
 
 --[[ ------------ ]]
@@ -22,11 +21,11 @@ local function OnSetChange( setId, changeType, _, _, activeType )
         local debugStr = zo_strformat("SetId = <<1>>, changeType = <<2>>; activeType = <<3>>", setId, changeType, activeType)
         LibExoY.Debug( debugStr, {"EPT-SetChange"})
     end
-    -- supported set was equipped 
+    --- supported set was equipped 
     if changeType == LSD_CHANGE_TYPE_ACTIVATED then 
         EPT.setTracker:ActivateObj( setId ) 
     end 
-    -- supported set was unequipped 
+    --- supported set was unequipped 
     if changeType == LSD_CHANGE_TYPE_DEACTIVATED then 
         EPT.setTracker:DeactivateObj( setId ) 
     end 
@@ -44,14 +43,28 @@ end
 
 local function Initialize() 
 
-    --- Variable Definition
-    EPT.debug = true 
-    --if ExoYsDevelopmentTool then 
-    --    EPT.debug = ExoYsDevelopmentTool.addonDebug[EPT.name] 
-    --end
+    --- Variable Definition (Temporary)
+    if GetUnitDisplayName("player") == "@ExoY94" then EPT.debug = true end
 
     --- Saved Variables 
+    local AddonSettingsParameter = {
+        name =  "ExoYsProcSetTimer",-- will build sv name and panel name from that 
+        displayName = "|c00FF00ExoY|rs Proc Set Timer", -- for menu and dialogs 
 
+        --- Saved Variables 
+        storeVersion = 1, 
+        globalDefaults = { },
+        profileDefaults = { },
+        OnProfileChange = function(newProfile, oldProfile ) end, 
+
+        --- Settings Menu
+        addonVersion = "3.0.0", 
+        globalSettingsControls = { },
+        profileSettingsControls = { },
+        esoui = "info2783-ExoYsProcSetTimer.html", 
+    }  
+
+  local SV, ProfileManager = LibExoY.InitializeAddonSettings( AddonSettingsParameter )
 
     --- User Interace 
     EPT.ui = {}
@@ -64,7 +77,7 @@ local function Initialize()
     EPT.setTracker.classes.proc = SetTracker.main:New( SetTracker["proc"] )
     -- table for sets with special behavior to define individual classes instances
     EPT.setTracker.specialSets = SetTracker.specialSets or {}
-    EPT.setTrackerClass = nil   -- clean up distribution table
+    EPT.setTrackerClass = nil   -- clean up distribution table for initialization 
     
     --- Register with LibSetDetection 
     -- list of sets supported by EPT for LSD event filter
@@ -76,12 +89,41 @@ local function Initialize()
     if EPT.debug then 
         if resultLSD == 0 then 
             local debugStr = "Registration with LibSetDetection "..LibExoY.ColorString("successful", "green") 
-            LibExoY.Debug( debugStr, {"EPT-Init"}) 
+            LibExoY.Print( debugStr, {"EPT-Init"}) 
         else 
             local debugStr = "Registration with LibSetDetection "..LibExoY.ColorString("failed", "red") 
-            LibExoY.Debug( debugStr, {"EPT-Init"}) 
+            LibExoY.Print( debugStr, {"EPT-Init"}) 
         end
     end  
+
+    --- Register Events 
+    -- combat state 
+
+
+    --- Slash Commands 
+    local subCmdTable = {
+        ["supportedSets"] = { 
+            info = "lists all supported sets", 
+            callback = function() 
+                table.sort(supportedSets) 
+                LibExoY.Print("complete list of all sets included", {"EPT - Supported Sets"})
+                for idx, setId in ipairs( supportedSets ) do 
+                    local setInfo = zo_strformat("[<<1>>] <<2>>", LibExoY.ColorString( tostring(setId), "white"), EPT.GetSetData(setId).itemLink) 
+                    d(setInfo)
+                end
+            end,
+        }, 
+    }
+
+    local tmpCmd = function() 
+                table.sort(supportedSets) 
+                LibExoY.Print("complete list of all sets included", {"EPT - Supported Sets"})
+                for idx, setId in ipairs( supportedSets ) do 
+                    local setInfo = zo_strformat("[<<1>>] <<2>>", LibExoY.ColorString( tostring(setId), "white"), EPT.GetSetData(setId).itemLink) 
+                    d(setInfo)
+                end
+            end
+    LibExoY.AddSlashCmd( "/ept", tmpCmd)--, "ExoYsProcSetTimer - ChatCommands", subCmdTable)
 
 end
 

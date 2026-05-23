@@ -11,8 +11,8 @@ function SetTrackerHandler:New()
     self.__index = self  
 
     obj.classes = {}
-    obj.objectRegistry = {}    -- list of all already created set tracker objects 
-    obj.activeObjects = {}    -- list of currently active tracke
+    obj.objectRegistry = {}    -- list of all already created set tracker objects (no pool) 
+    obj.activeObjects = {}    -- list of currently active tracker
 
     return obj 
 end
@@ -20,23 +20,21 @@ end
 
 
 function SetTrackerHandler:ActivateObj( setId )
-
+    -- creates the object, if this is the first time this set is equipped
     if not self.objectRegistry[setId] then 
-        self:InitializeObj( setId ) 
+        self:InitializeObj( setId ) -- object is added to registry
     end 
 
+    -- grabs object from registry 
     local obj = self.objectRegistry[setId] 
+
 
     -- add fragments 
     -- register events 
-    self.activeObjects[setId] = obj
+    self.activeObjects[setId] = obj     -- list of currently active tracker
 
     -- chose position 
 end 
-
-
-
-
 
 
 
@@ -46,7 +44,6 @@ function SetTrackerHandler:InitializeObj( setId )
     local obj = self.classes[ setType ]:New( self.specialSets[setId], setId )
     
     --- class specific initialization
-
     obj:Initialize()
 
 

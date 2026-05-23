@@ -3,6 +3,7 @@
 ## Description: ProcSetTracker
 ## APIVersion: 101050
 ## Version: 3.0.0 
+## SavedVariables: EPTSV ExoYsProcSetTimerSV
 
 ## DependsOn: LibAddonMenu-2.0
 ## DependsOn: LibExoYsUtilities
