@@ -16,18 +16,31 @@ function SetTrackerMain:New( Obj, setId )
     if setId then 
         Obj.setId = setId 
         Obj.name = "EPT_SetTracker_"..tostring(setId)
-        --- Populate Set Data (Generic Properties) 
-        local setData = EPT.GetSetData( setId ) 
-        setData.setName = LSD.GetSetName( setId ) 
-        Obj.setData = setData 
     end
 
     return Obj
 end
 
 
-function SetTrackerMain:CallMetaMethod( method, ... )
-    local mt = getmetatable(self) 
-    local MetaMethod = mt.__index[method]  
-    return MetaMethod(self, ...) 
+function SetTrackerMain:Activate() 
+    self:RegisterEvents()
+    self:AddToScenes() 
+end
+
+
+function SetTrackerMain:Deactivate() 
+    self:UnregisterEvents() 
+    self:RemoveFromScenes() 
+end
+
+
+function SetTrackerMain:AddToScenes() 
+    HUD_UI_SCENE:AddFragment( self.fragment )
+    HUD_SCENE:AddFragment( self.fragment )
+end
+
+
+function SetTrackerMain:RemoveFromScenes() 
+    HUD_UI_SCENE:RemoveFragment( self.fragment )
+    HUD_SCENE:RemoveFragment( self.fragment )
 end

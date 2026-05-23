@@ -1,5 +1,6 @@
 ExoYsProcSetTimer = ExoYsProcSetTimer or {}
 local EPT = ExoYsProcSetTimer 
+local LibExoY = LibExoYsUtilities
 
 local SetTrackerHandler = {}
 EPT.setTrackerClass = EPT.setTrackerClass or {}
@@ -28,10 +29,9 @@ function SetTrackerHandler:ActivateObj( setId )
     -- grabs object from registry 
     local obj = self.objectRegistry[setId] 
 
+    obj:Activate() 
 
-    -- add fragments 
-    -- register events 
-    self.activeObjects[setId] = obj     -- list of currently active tracker
+    table.insert( self.activeObjects, setId )      
 
     -- chose position 
 end 
@@ -58,11 +58,10 @@ end
 
 
 function SetTrackerHandler:DeactivateObj( setId ) 
-    local obj = self.objects[setId]
+    local obj = self.objectRegistry[setId]
     
+    local objIdx = LibExoY.FindNumericKey( self.activeObjects, setId ) 
+    table.remove(self.activeObjects, objIdx )
 
-    self.activeObjects[setId] = nil 
-    -- remove fragments
-    -- unregister events 
-    -- remove from active list 
+    obj:Deactivate()
 end

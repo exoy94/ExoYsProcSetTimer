@@ -1,6 +1,7 @@
 ExoYsProcSetTimer = ExoYsProcSetTimer or {}
 local EPT = ExoYsProcSetTimer 
 local LibExoY = LibExoYsUtilities
+local LSD = LibSetDetection
 
 local EM = GetEventManager() 
 
@@ -13,19 +14,52 @@ EPT.setTrackerClass.proc = SetTrackerProc
 
 function SetTrackerProc:Initialize( ) 
 
-    local setData = self.setData
-    --- populate setData with class specific notation
-    setData.duration = setData.duration or GetAbilityDuration( setData.procId )
-    setData.cooldown = setData.cooldown or GetAbilityCooldown( setData.procId ) 
+    self.setData = EPT.GetSetData( self.setId ) 
+
+    local setDataMeta = {
+        duration = GetAbilityDuration( self.setData.procId ), 
+        cooldown = GetAbilityCooldown( self.setData.procId ),
+        setName = LSD.GetSetName( self.setId ),
+    }
+    setmetatable(self.setData, {__index = setDataMeta})
 
     self.procData = {
+        eventName = self.name.."_Event",
+        updateName = self.name.."_Update",
         updateRunning = false, 
         terminalTime = 0, 
     }
-    self:RegisterEvents()
-
     self.indicator = LibExoY.CreateTracker( self.name.."_Indicator" )
+
+    self.fragment = ZO_HUDFadeSceneFragment:New( self.indicator.controls.win )
+    
 end
+
+--[[ @Idea - moved to superclass
+
+function SetTrackerProc:Activate() 
+    self:RegisterEvents()
+    self:AddToScenes() 
+end
+
+
+function SetTrackerProc:Deactivate() 
+    self:UnregisterEvents() 
+    self:RemoveFromScenes() 
+end
+
+
+function SetTrackerProc:AddToScenes() 
+    HUD_UI_SCENE:AddFragment( self.fragment )
+    HUD_SCENE:AddFragment( self.fragment )
+end
+
+
+function SetTrackerProc:RemoveFromScenes() 
+    HUD_UI_SCENE:RemoveFragment( self.fragment )
+    HUD_SCENE:RemoveFragment( self.fragment )
+end
+]]
 
 
 function SetTrackerProc:OnProcEvent(_, result)
@@ -44,10 +78,6 @@ function SetTrackerProc:OnProcEvent(_, result)
         LibExoY.Print(debugStr, {"EPT-ProcEvent"})
     end
 
-    local function OnUpdate() 
-
-    end
-
     local time = GetGameTimeMilliseconds()
     local endDuration = time + setData.duration
     local endCooldown = time + setData.cooldown
@@ -55,7 +85,7 @@ function SetTrackerProc:OnProcEvent(_, result)
 
     --- register update 
     if not procData.updateRunning then 
-        EM:RegisterForUpdate(self.name.."_Update", 100, function() self:OnUpdate() end ) 
+        EM:RegisterForUpdate(procData.updateName, 100, function() self:OnUpdate() end ) 
         procData.updateRunning = true 
     end
 end
@@ -78,7 +108,7 @@ function SetTrackerProc:OnUpdate()
 
     
     if timeRemaining < 0 then 
-        EM:UnregisterForUpdate(self.name.."_Update") 
+        EM:UnregisterForUpdate( procData.updateName) 
         procData.updateRunning = false 
         LibExoY.Print("UpdateStop", {"EPT-Proc"})
     end
@@ -87,8 +117,13 @@ end
 
 function SetTrackerProc:RegisterEvents() 
     local setData = self.setData
-    local name = self.name.."_ProcEvent"
+    local name = self.procData.eventName
     EM:RegisterForEvent(name, EVENT_COMBAT_EVENT, function(...) self:OnProcEvent(...) end)
     EM:AddFilterForEvent(name, EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, setData.procId)
     EM:AddFilterForEvent(name, EVENT_COMBAT_EVENT, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE , COMBAT_UNIT_TYPE_PLAYER)
+end
+
+function SetTrackerProc:UnregisterEvents() 
+    local name = self.procData.eventName
+    EM:UnregisterForEvent(name, EVENT_COMBAT_EVENT)
 end
