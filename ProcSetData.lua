@@ -16,15 +16,16 @@ function EPT.GetSetData( setId )
     return ProcSetData[setId]
 end
 
-function EPT.GetSetType( setId ) 
-    return ProcSetData[setId].setType
+function EPT.GetSetClass( setId ) 
+    return ProcSetData[setId].class
 end
 
 --[[ ---------------------- ]]
 --[[ -- Global Constants -- ]]
 --[[ ---------------------- ]]
 
-EPT_SET_TYPE_PROC = "proc"
+--[[
+EPT_SET_CLASS_PROC = "proc"
 EPT_SET_TYPE_GROUP = "group"
 EPT_SET_TYPE_STACK = "stack"
 EPT_SET_TYPE_TOGGLE = "toggle"
@@ -38,10 +39,6 @@ function EPT.GetSetTypeList()
     }
 end
 
-function EPT.GetSetType( setId ) 
-    return ProcSetData[setId].setType
-end
-
 EPT_STACK_TYPE_SELF = 1
 EPT_STACK_TYPE_TARGET = 2 
 
@@ -51,6 +48,8 @@ function EPT.GetStackTypeList()
         EPT_STACK_TYPE_TARGET = "target", 
     }
 end 
+]]
+
 
 --[[ ------------------------- ]]
 --[[ -- ProcSet Definitions -- ]]
@@ -72,16 +71,16 @@ end
 
 --- Guidelines abilityId  
 --      + used for dynamically filling the setData
---      + setType "proc" = procId
---      + setType "stack" = stackId
---      + setType "group" = procId 
---      + setType "toggle" = 
+--      + setClass "proc" = procId
+--      + setClass "stack" = stackId
+--      + setClass "group" = procId 
+--      + setClass "toggle" = 
 
 
 do --- U27 (DLC - Stonethorn)
     ProcSetData[518] = {
         itemLink = "|H0:item:165254:362:50:0:0:0:11:0:0:0:0:0:0:0:2049:107:0:1:0:10000:0|h|h", 
-        setType = "proc", 
+        class = "proc", 
         procId = 142660,
     } 
 end
@@ -89,7 +88,7 @@ end
 do --- U31 (DLC - Waking Flame)
     ProcSetData[602] = {    -- Crimson Oath's Rive
         itemLink = "|H0:item:177430:364:50:0:0:0:0:0:0:0:0:0:0:0:1:123:0:1:0:10000:0|h|h", 
-        setType = "proc", 
+        class = "proc", 
         procId = 159288, -- legacy: 159291,
     }
 end 

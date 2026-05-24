@@ -14,14 +14,12 @@ EPT.setTrackerClass.proc = SetTrackerProc
 
 function SetTrackerProc:Initialize( ) 
 
-    self.setData = EPT.GetSetData( self.setId ) 
-
-    local setDataMeta = {
+    local setDataMetaIndex = {
         duration = GetAbilityDuration( self.setData.procId ), 
         cooldown = GetAbilityCooldown( self.setData.procId ),
-        setName = LSD.GetSetName( self.setId ),
     }
-    setmetatable(self.setData, {__index = setDataMeta})
+    local setDataMeta = getmetatable( self.setData ) 
+    LibExoY.DeepMergeTables( setDataMeta.__index, setDataMetaIndex )
 
     self.procData = {
         eventName = self.name.."_Event",
@@ -31,35 +29,9 @@ function SetTrackerProc:Initialize( )
     }
     self.indicator = LibExoY.CreateTracker( self.name.."_Indicator" )
 
-    self.fragment = ZO_HUDFadeSceneFragment:New( self.indicator.controls.win )
-    
+    table.insert( self.sceneFragments, ZO_HUDFadeSceneFragment:New( self.indicator.controls.win ))     
 end
 
---[[ @Idea - moved to superclass
-
-function SetTrackerProc:Activate() 
-    self:RegisterEvents()
-    self:AddToScenes() 
-end
-
-
-function SetTrackerProc:Deactivate() 
-    self:UnregisterEvents() 
-    self:RemoveFromScenes() 
-end
-
-
-function SetTrackerProc:AddToScenes() 
-    HUD_UI_SCENE:AddFragment( self.fragment )
-    HUD_SCENE:AddFragment( self.fragment )
-end
-
-
-function SetTrackerProc:RemoveFromScenes() 
-    HUD_UI_SCENE:RemoveFragment( self.fragment )
-    HUD_SCENE:RemoveFragment( self.fragment )
-end
-]]
 
 
 function SetTrackerProc:OnProcEvent(_, result)
@@ -103,9 +75,6 @@ function SetTrackerProc:OnUpdate()
     bar:SetValue(timeRemaining)
 
     self.indicator.iconObj.controls.labels[1]:SetText( tostring(timeRemaining) ) 
-    d(tostring(timeRemaining))
-    
-
     
     if timeRemaining < 0 then 
         EM:UnregisterForUpdate( procData.updateName) 

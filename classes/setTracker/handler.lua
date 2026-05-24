@@ -1,22 +1,32 @@
 ExoYsProcSetTimer = ExoYsProcSetTimer or {}
 local EPT = ExoYsProcSetTimer 
+
+--- Libraries 
 local LibExoY = LibExoYsUtilities
 
-local SetTrackerHandler = {}
-EPT.setTrackerClass = EPT.setTrackerClass or {}
+--- Object Table 
+local SetTrackerHandler = {}    
+EPT.setTrackerClass = EPT.setTrackerClass or {}     -- distribution table for initialization 
 EPT.setTrackerClass.handler = SetTrackerHandler 
 
+--- Info 
+-- providdes all standard set classes  
+-- contains subclass definition for special sets
+-- keeps track of existing tracker objects
+-- keeps track of currently active tracker 
 
-
+-- Note: 
+--  Little bit of a weird Class, as I currently dont intend to  have more then one object of it. 
+--  I decided to leave it as a class, incase I come across a special application later
 
 function SetTrackerHandler:New() 
     local obj = setmetatable({}, self)
     self.__index = self  
 
-    obj.classes = {} 
-    obj.specialSets = {}
-    obj.objectRegistry = {}    -- list of all already created set tracker objects (no pool) 
-    obj.activeObjects = {}    -- list of currently active tracker
+    obj.classes = {} -- template objects of all standard set classes 
+    obj.specialSets = {} -- subclass definitions for unique sets 
+    obj.objectRegistry = {}    -- list of all existing set tracker objects (no pool) 
+    obj.activeObjects = {}    -- list (numeric) of all active tracker objects by *setId*
 
     return obj 
 end
@@ -28,7 +38,7 @@ function SetTrackerHandler:ActivateObj( setId )
     -- if not, create and initialize it 
     if not self.objectRegistry[setId] then 
         -- object is automatically added to registry 
-        self:InitializeObj( setId )
+        self:InitializeObj( setId ) -- e.g. name, standard *setData*
     end 
     -- grabs object from registry 
     local obj = self.objectRegistry[setId] 
@@ -40,16 +50,14 @@ end
 
 
 function SetTrackerHandler:InitializeObj( setId )
-    -- *setType* defined in database set "setTracker-class" 
-    -- (main is the superclass, and all classes are initialized on addon loading)
+    -- *class* defined in database (main is the superclass, and all classes are initialized on addon loading)
     -- for any special cases, "specialSets[setId]" defines the unique subclass definition
-    local setType = EPT.GetSetType( setId )  
-    local obj = self.classes[ setType ]:New( self.specialSets[setId], setId )
+    local class = EPT.GetSetClass( setId )  
+    local obj = self.classes[ class ]:New( self.specialSets[setId], setId )
     
     -- object specific initialization 
-    -- unique elements for each class/subclass
-    obj:Initialize()
-    -- e.g., populate *setData*; create ui-elements; ....
+    -- unique function for each class/subclass
+    obj:Initialize() -- e.g., populate unique *setData*; create ui-elements; ....
 
     -- add object to registry in handler
     self.objectRegistry[setId] = obj

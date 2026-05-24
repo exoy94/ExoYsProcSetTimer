@@ -107,7 +107,7 @@ end
 
 
 function Customizer:OpenWindow( setId, isTemplate )
-    -- when isTemplate dann is setId = setType constant 
+    -- when isTemplate dann is setId = setClass constant 
 
     -- input tells the window how to initialize itself, 
     -- with respect to which template/set to load 

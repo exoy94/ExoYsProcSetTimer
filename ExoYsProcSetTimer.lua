@@ -1,12 +1,20 @@
 ExoYsProcSetTimer = ExoYsProcSetTimer or {}
 local EPT = ExoYsProcSetTimer 
 
-local EM = GetEventManager()
+--- Libraries 
 local LibExoY = LibExoYsUtilities
 local LSD = LibSetDetection
 
+--- ZOS Objects 
+local EM = GetEventManager()
 
 
+--[[ Notes ]]
+--- Task-List 
+-- [ } check which event (2240 or 2245) is more working for more sets for basic proc 
+
+
+--- 
 EPT.name = "ExoYsProcSetTimer"
 EPT.version = "3.0.0"
 
