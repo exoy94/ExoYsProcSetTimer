@@ -38,7 +38,6 @@ function Customizer:New( name )
     Obj:CreateControls( ) 
     Obj:CreateHeader( ) 
     Obj:CreateMenu( )
-    --Obj:CreateInfo() 
     Obj:CreatePreview( ) 
     Obj:CreateSelection( )
 
@@ -73,39 +72,72 @@ function Customizer:CloseWindow()
 end
 
 
+function Customizer:CalculateCtrlDimensions() 
+--[[ 
+    +----------------------width------------------------+
+  heightH                 (Header)                      |
+    +-----widthC------+-widthD-+------------------------+        
+    |                 |        |                        |
+  heightB (Selection) | (Menu) |                        |
+    |                 |        |       (Settings)    heightA
+    +-----------------+--------+                        |
+  heightC    (Preview)         |                        |
+    +---------widthB-----------+---------widthA---------+
+
+    phi = heightB/heightC = widthA/widthB = widthC/widthD
+
+]]  
+    local sizeCoef = 0.6
+    local phi = 1.618 -- golden ratio 
+    local screenWidth, screenHeight = GuiRoot:GetDimensions()
+    local heightH = 80 -- header
+    local d = {}    -- dimensions
+    -- horizontal dimensions
+    d.width = sizeCoef*screenWidth
+    d.widthA = math.floor( d.width/phi )
+    d.widthB = d.width - d.widthA 
+    d.widthC = math.floor( d.widthB/phi ) 
+    d.widthD = d.widthB - d.widthC
+    -- vertical dimensions
+    d.height = sizeCoef*screenHeight
+    d.heightA = d.height - heightH 
+    d.heightB = math.floor( d.heightA/phi ) 
+    d.heightC = d.heightA - d.heightB 
+    d.heightH = heightH
+    return d 
+end
+
 
 function Customizer:CreateControls( )
     local controls = {}
     local name = self.name
 
-    --- Dimensions  
+    --- Dimensions    
     local screenWidth, screenHeight = GuiRoot:GetDimensions()
-    local param = {
-        width = 0.6*screenWidth, 
-        height = 0.6*screenHeight, 
-        posX = 0.2*screenWidth,
-        posY = 0.2*screenHeight,
-    }
+    
+    local dims = self:CalculateCtrlDimensions() 
 
     local win = WM:CreateTopLevelWindow( name.."_Window" ) 
     win:ClearAnchors() 
-    win:SetAnchor( TOPLEFT, GuiRoot, TOPLEFT, param.posX, param.posY ) 
+    win:SetAnchor( CENTER, GuiRoot, CENTER, 0, 0 ) 
     win:SetHidden(false)
     win:SetDrawTier( DT_HIGH )
+    win:SetDimensions( dim.width, dim.height )
     --- ToDo Handlers
+
     controls.win = win
 
     local ctrl = WM:CreateControl( name.."_Ctrl", win, CT_CONTROL )
     ctrl:ClearAnchors() 
     ctrl:SetAnchor(TOPLEFT, win, TOPLEFT)
-    ctrl:SetDimensions( param.width, param.height )  
+    ctrl:SetDimensions( dim.width, dim.height )  
     controls.ctrl = ctrl
 
     local back = WM:CreateControl( name.."_Back", ctrl, CT_BACKDROP )
     back:ClearAnchors() 
     back:SetAnchor( TOPLEFT, ctrl, TOPLEFT, -2, -2)
     back:SetDimensions(param.width+4,param.height+4) 
-    back:SetCenterColor(0,0,0,0.9) 
+    back:SetCenterColor(0,0,0,0) 
     back:SetEdgeColor( 0,0,0,1 )
     back:SetEdgeTexture(nil, 4,4,4)
     controls.back = back 
@@ -114,32 +146,32 @@ function Customizer:CreateControls( )
     local header = WM:CreateControl( name.."_HeaderCtrl", ctrl, CT_CONTROL )
     header:ClearAnchors() 
     header:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 0, 0) 
-    header:SetDimensions(param.width, 80)  
+    header:SetDimensions( dim.width, dim.heightH )  
     controls.header = header
-
-    local info = WM:CreateControl( name.."_InfoCtrl", ctrl, CT_CONTROL )
-    info:ClearAnchors() 
-    info:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 0, param.height-300) 
-    info:SetDimensions(600, 80)  
-    controls.info = info
 
     local selection = WM:CreateControl( name.."_SelectionCtrl", ctrl, CT_CONTROL )
     selection:ClearAnchors() 
-    selection:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 0, 80) 
-    selection:SetDimensions(400, param.height-80-350)  
+    selection:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 0, dim.heightH) 
+    selection:SetDimensions( dim.widthC, dim.heightB)  
     controls.selection = selection
 
     local menu = WM:CreateControl( name.."_MenuCtrl", ctrl, CT_CONTROL )
     menu:ClearAnchors() 
-    menu:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 400, 80) 
-    menu:SetDimensions(300, param.height-80-350) 
+    menu:SetAnchor(TOPLEFT, ctrl, TOPLEFT, dim.widthC, dim.heightH) 
+    menu:SetDimensions(dim.widthD, dim.heightB) 
     controls.menu = menu
 
     local settings = WM:CreateControl( name.."_SettingsCtrl", ctrl, CT_CONTROL )
     settings:ClearAnchors() 
-    settings:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 700, 80) 
-    settings:SetDimensions(param.width-700, param.height-80) 
+    settings:SetAnchor(TOPLEFT, ctrl, TOPLEFT, dim.heightB, dim.heightH) 
+    settings:SetDimensions( dim.widthA, dim.heightA ) 
     controls.settings = settings
+
+    local preview = WM:CreateControl( name.."_PreviewCtrl", ctrl, CT_CONTROL )
+    preview:ClearAnchors() 
+    preview:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 0, dim.heightH + dim.heightB ) 
+    preview:SetDimensions( dim.widthB, dim.heightC)
+    controls.preview = preview
 
     --- Temporary to show settings
     local back = WM:CreateControl( name.."SettingsBG", settings, CT_BACKDROP) 
@@ -155,15 +187,7 @@ function Customizer:CreateControls( )
     label:SetText("Settings")
     LibExoY.AnchorLabelText(label, CENTER) 
 
-    local preview = WM:CreateControl( name.."_PreviewCtrl", ctrl, CT_CONTROL )
-    preview:ClearAnchors() 
-    preview:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 0, param.height-350) 
-    preview:SetDimensions(700, 350)
-    controls.preview = preview
-
     --[[
-   
-     
     --- Header    
     
     --- Set/Profile Selection 
@@ -331,25 +355,6 @@ function Customizer:CreatePreview( )
     LibExoY.AnchorLabelText(label, CENTER) 
 end
 
-
-function Customizer:CreateInfo( )
-    local name = self.name.."_Info" 
-    local ctrl = self.controls.info 
-
-    --- Temporary to show ctrlSize 
-    local back = WM:CreateControl( name.."Back", ctrl, CT_BACKDROP) 
-    back:ClearAnchors() 
-    back:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 0, 0) 
-    back:SetDimensions( ctrl:GetDimensions() )
-    back:SetCenterColor(0,1,0,0.3)
-    local label = WM:CreateControl( name.."Label", ctrl, CT_LABEL) 
-    label:ClearAnchors() 
-    label:SetAnchor(CENTER, back, CENTER, 0, 0) 
-    label:SetColor(1,1,1,1) 
-    label:SetFont(LibExoY.GetFont(40))
-    label:SetText("Info")
-    LibExoY.AnchorLabelText(label, CENTER) 
-end
 
 
 

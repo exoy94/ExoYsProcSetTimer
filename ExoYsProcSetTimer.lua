@@ -13,6 +13,7 @@ local EM = GetEventManager()
 --- Task-List 
 -- [ ] check which event (2240 or 2245) is more working for more sets for basic proc 
 -- [ ] think about tables such es "supportedSets" and "supportedSetNames"
+-- [ ] update naming in slider and add resize function 
 
 --- 
 EPT.name = "ExoYsProcSetTimer"
@@ -48,6 +49,21 @@ end
 --[[ -- Initialization -- ]]
 --[[ -------------------- ]]
 
+local function GetGlobalDefaults() 
+    defaults = {
+        customizer = {
+            scale = 1,  
+        },
+    }
+    return defaults 
+end
+
+local function GetProfileDefaults() 
+    defaults = {}
+    return defaults   
+end
+
+
 
 local function Initialize() 
 
@@ -71,8 +87,8 @@ local function Initialize()
 
         --- Saved Variables 
         storeVersion = 1, 
-        globalDefaults = { },
-        profileDefaults = { },
+        globalDefaults = GetGlobalDefaults(),
+        profileDefaults = GetProfileDefaults(),
         OnProfileChange = function(newProfile, oldProfile) end, 
 
         --- Settings Menu
