@@ -87,8 +87,8 @@ function Customizer:CalculateCtrlDimensions()
     phi = heightB/heightC = widthA/widthB = widthC/widthD
 
 ]]  
-    local sizeCoef = 0.6
-    local phi = 1.618 -- golden ratio 
+    local sizeCoef = 0.6    -- size as screen percentage 
+    local phi = 1.618 -- golden ratio (61.8% and 38.2%)
     local screenWidth, screenHeight = GuiRoot:GetDimensions()
     local heightH = 80 -- header
     local d = {}    -- dimensions
@@ -115,7 +115,8 @@ function Customizer:CreateControls( )
     --- Dimensions    
     local screenWidth, screenHeight = GuiRoot:GetDimensions()
     
-    local dims = self:CalculateCtrlDimensions() 
+    local dim = self:CalculateCtrlDimensions() 
+    exoydevvar = dim 
 
     local win = WM:CreateTopLevelWindow( name.."_Window" ) 
     win:ClearAnchors() 
@@ -136,7 +137,7 @@ function Customizer:CreateControls( )
     local back = WM:CreateControl( name.."_Back", ctrl, CT_BACKDROP )
     back:ClearAnchors() 
     back:SetAnchor( TOPLEFT, ctrl, TOPLEFT, -2, -2)
-    back:SetDimensions(param.width+4,param.height+4) 
+    back:SetDimensions( dim.width+4, dim.height+4) 
     back:SetCenterColor(0,0,0,0) 
     back:SetEdgeColor( 0,0,0,1 )
     back:SetEdgeTexture(nil, 4,4,4)
@@ -163,7 +164,7 @@ function Customizer:CreateControls( )
 
     local settings = WM:CreateControl( name.."_SettingsCtrl", ctrl, CT_CONTROL )
     settings:ClearAnchors() 
-    settings:SetAnchor(TOPLEFT, ctrl, TOPLEFT, dim.heightB, dim.heightH) 
+    settings:SetAnchor(TOPLEFT, ctrl, TOPLEFT, dim.widthB, dim.heightH) 
     settings:SetDimensions( dim.widthA, dim.heightA ) 
     controls.settings = settings
 
@@ -352,7 +353,7 @@ function Customizer:CreatePreview( )
     label:SetColor(1,1,1,1) 
     label:SetFont(LibExoY.GetFont(40))
     label:SetText("Preview")
-    LibExoY.AnchorLabelText(label, CENTER) 
+    LibExoY.AnchorLabelText(label, CENTER)
 end
 
 
