@@ -1,10 +1,13 @@
 ExoYsProcSetTimer = ExoYsProcSetTimer or {}
 local EPT = ExoYsProcSetTimer 
-local LibExoY = LibExoYsUtilities
-local LSD = LibSetDetection
 
 local EM = GetEventManager() 
 
+--- Libraries
+local LibExoY = LibExoYsUtilities
+local LSD = LibSetDetection
+
+--- Object Table 
 local SetTrackerProc = {}
 EPT.setTrackerClass = EPT.setTrackerClass or {}
 EPT.setTrackerClass.proc = SetTrackerProc 

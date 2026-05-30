@@ -11,8 +11,8 @@ local EM = GetEventManager()
 
 --[[ Notes ]]
 --- Task-List 
--- [ } check which event (2240 or 2245) is more working for more sets for basic proc 
-
+-- [ ] check which event (2240 or 2245) is more working for more sets for basic proc 
+-- [ ] think about tables such es "supportedSets" and "supportedSetNames"
 
 --- 
 EPT.name = "ExoYsProcSetTimer"
@@ -54,16 +54,26 @@ local function Initialize()
     --- Variable Definition (Temporary)
     if GetUnitDisplayName("player") == "@ExoY94" then EPT.debug = true end
 
+    -- list of sets supported by EPT for LSD event filter
+    local supportedSets = {}
+    for setId, _ in pairs( EPT.GetDatabase() ) do
+        table.insert( supportedSets, setId) 
+    end
+    EPT.supportedSetNames = {  }    --- @ToDo 
+    for _, setId in ipairs(supportedSets) do 
+        table.insert(EPT.supportedSetNames, LSD.GetSetName(setId) )
+    end
+
     --- Saved Variables 
     local AddonSettingsParameter = {
-        name =  "ExoYsProcSetTimer",-- will build sv name and panel name from that 
+        name =  EPT.name,-- will build sv name and panel name from that 
         displayName = "|c00FF00ExoY|rs Proc Set Timer", -- for menu and dialogs 
 
         --- Saved Variables 
         storeVersion = 1, 
         globalDefaults = { },
         profileDefaults = { },
-        OnProfileChange = function(newProfile, oldProfile ) end, 
+        OnProfileChange = function(newProfile, oldProfile) end, 
 
         --- Settings Menu
         addonVersion = "3.0.0", 
@@ -72,10 +82,12 @@ local function Initialize()
         esoui = "info2783-ExoYsProcSetTimer.html", 
     }  
 
-  local SV, ProfileManager = LibExoY.InitializeAddonSettings( AddonSettingsParameter )
+    EPT.sv, EPT.pm = LibExoY.InitializeAddonSettings( AddonSettingsParameter )
 
     --- User Interace 
     EPT.ui = {}
+    EPT.ui.customizer = EPT.userInterface.customizer:New( EPT.name.."_Customizer" ) 
+    EPT.userInterface = nil 
 
     --- SetTracker 
     -- initialize handler and classes 
@@ -88,11 +100,7 @@ local function Initialize()
     EPT.setTrackerClass = nil   -- clean up distribution table for initialization 
     
     --- Register with LibSetDetection 
-    -- list of sets supported by EPT for LSD event filter
-    local supportedSets = {}
-    for setId, _ in pairs( EPT.GetDatabase() ) do
-        table.insert( supportedSets, setId) 
-    end
+
     local resultLSD = LSD.RegisterEvent( LSD_EVENT_SET_CHANGE, EPT.name, OnSetChange, LSD_UNIT_TYPE_PLAYER, supportedSets)
     if EPT.debug then 
         if resultLSD == 0 then 

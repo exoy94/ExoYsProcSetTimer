@@ -6,7 +6,7 @@
 ## SavedVariables: EPTSV ExoYsProcSetTimerSV
 
 ## DependsOn: LibAddonMenu-2.0
-## DependsOn: LibExoYsUtilities
+## DependsOn: LibExoYsUtilities>=10
 ## DependsOn: LibSetDetection>=4
 
 ; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
