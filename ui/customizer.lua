@@ -33,11 +33,16 @@ function Customizer:New( name )
     local Obj = setmetatable({}, self) 
     self.__index = self 
 
-    Obj:CreateControls( name ) 
+    self.name = name 
 
-    -- header 
-    -- selector
-    -- menu 
+    Obj:CreateControls( ) 
+    Obj:CreateHeader( ) 
+    Obj:CreateMenu( )
+    --Obj:CreateInfo() 
+    Obj:CreatePreview( ) 
+    Obj:CreateSelection( )
+
+    -- selector 
     -- settings 
     -- preview 
 
@@ -51,8 +56,27 @@ function Customizer:New( name )
 end
 
 
-function Customizer:CreateControls( name ) 
+function Customizer:OpenWindow( setId, isTemplate )
+    -- when isTemplate dann is setId = setClass constant 
+
+    -- input tells the window how to initialize itself, 
+    -- with respect to which template/set to load 
+    -- this way i can move the setup of all the panels and stuff outside of the initialization end
+
+end
+
+
+
+function Customizer:CloseWindow() 
+    -- apply new settings to all relevant active tracker objeects 
+    -- 
+end
+
+
+
+function Customizer:CreateControls( )
     local controls = {}
+    local name = self.name
 
     --- Dimensions  
     local screenWidth, screenHeight = GuiRoot:GetDimensions()
@@ -61,7 +85,6 @@ function Customizer:CreateControls( name )
         height = 0.6*screenHeight, 
         posX = 0.2*screenWidth,
         posY = 0.2*screenHeight,
-        menuWidth = 200, 
     }
 
     local win = WM:CreateTopLevelWindow( name.."_Window" ) 
@@ -82,78 +105,67 @@ function Customizer:CreateControls( name )
     back:ClearAnchors() 
     back:SetAnchor( TOPLEFT, ctrl, TOPLEFT, -2, -2)
     back:SetDimensions(param.width+4,param.height+4) 
-    back:SetCenterColor(0,0,0,0.5) 
-    back:SetEdgeColor( 211/255,175/255,55/255 )
+    back:SetCenterColor(0,0,0,0.9) 
+    back:SetEdgeColor( 0,0,0,1 )
+    back:SetEdgeTexture(nil, 4,4,4)
+    controls.back = back 
 
-    --- All the Controls 
-    local header = WM:CreateControl( name.."_HeaderRoot", ctrl, CT_CONTROL )
+    --- root controls for components  
+    local header = WM:CreateControl( name.."_HeaderCtrl", ctrl, CT_CONTROL )
     header:ClearAnchors() 
     header:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 0, 0) 
-    header:SetDimensions(param.width, 100)  
-    local backHeader = WM:CreateControl( name.."_HeaderBg", header, CT_BACKDROP) 
-    backHeader:ClearAnchors() 
-    backHeader:SetAnchor(TOPLEFT, header, TOPLEFT, 0, 0) 
-    backHeader:SetDimensions( backHeader:GetParent():GetDimensions() )
-    backHeader:SetCenterColor(1,1,1,0.3)
+    header:SetDimensions(param.width, 80)  
+    controls.header = header
 
-    local selection = WM:CreateControl( name.."_SelectionRoot", ctrl, CT_CONTROL )
+    local info = WM:CreateControl( name.."_InfoCtrl", ctrl, CT_CONTROL )
+    info:ClearAnchors() 
+    info:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 0, param.height-300) 
+    info:SetDimensions(600, 80)  
+    controls.info = info
+
+    local selection = WM:CreateControl( name.."_SelectionCtrl", ctrl, CT_CONTROL )
     selection:ClearAnchors() 
-    selection:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 0, 100) 
-    selection:SetDimensions(param.width, 200)  
-    local backSelection = WM:CreateControl( name.."_SelectionBg", selection, CT_BACKDROP) 
-    backSelection:ClearAnchors() 
-    backSelection:SetAnchor(TOPLEFT, selection, TOPLEFT, 0, 0) 
-    backSelection:SetDimensions( backSelection:GetParent():GetDimensions() )
-    backSelection:SetCenterColor(1,0,1,0.3)
+    selection:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 0, 80) 
+    selection:SetDimensions(400, param.height-80-350)  
+    controls.selection = selection
 
-    local menu = WM:CreateControl( name.."_MenuRoot", ctrl, CT_CONTROL )
+    local menu = WM:CreateControl( name.."_MenuCtrl", ctrl, CT_CONTROL )
     menu:ClearAnchors() 
-    menu:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 0, 300) 
-    menu:SetDimensions(param.menuWidth, param.height-300)  
-    local backMenu = WM:CreateControl( name.."_MenuBg", menu, CT_BACKDROP) 
-    backMenu:ClearAnchors() 
-    backMenu:SetAnchor(TOPLEFT, menu, TOPLEFT, 0, 0) 
-    backMenu:SetDimensions( backMenu:GetParent():GetDimensions() )
-    backMenu:SetCenterColor(1,0,0,0.3)
+    menu:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 400, 80) 
+    menu:SetDimensions(300, param.height-80-350) 
+    controls.menu = menu
 
-    local settings = WM:CreateControl( name.."_SettingsRoot", ctrl, CT_CONTROL )
+    local settings = WM:CreateControl( name.."_SettingsCtrl", ctrl, CT_CONTROL )
     settings:ClearAnchors() 
-    settings:SetAnchor(TOPLEFT, ctrl, TOPLEFT, param.menuWidth, 300) 
-    settings:SetDimensions(param.width-param.menuWidth, (param.height-300)/2) 
-    local backSettings = WM:CreateControl( name.."_SettingsBg", settings, CT_BACKDROP) 
-    backSettings:ClearAnchors() 
-    backSettings:SetAnchor(TOPLEFT, settings, TOPLEFT, 0, 0) 
-    backSettings:SetDimensions( backSettings:GetParent():GetDimensions() )
-    backSettings:SetCenterColor(0,1,0,0.3) 
+    settings:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 700, 80) 
+    settings:SetDimensions(param.width-700, param.height-80) 
+    controls.settings = settings
 
-    local preview = WM:CreateControl( name.."_PreviewRoot", ctrl, CT_CONTROL )
+    --- Temporary to show settings
+    local back = WM:CreateControl( name.."SettingsBG", settings, CT_BACKDROP) 
+    back:ClearAnchors() 
+    back:SetAnchor(TOPLEFT, settings, TOPLEFT, 0, 0) 
+    back:SetDimensions( settings:GetDimensions() )
+    back:SetCenterColor(0,1,0,0.3)
+    local label = WM:CreateControl( name.."SettingsLabel", settings, CT_LABEL) 
+    label:ClearAnchors() 
+    label:SetAnchor(CENTER, back, CENTER, 0, 0) 
+    label:SetColor(1,1,1,1) 
+    label:SetFont(LibExoY.GetFont(40))
+    label:SetText("Settings")
+    LibExoY.AnchorLabelText(label, CENTER) 
+
+    local preview = WM:CreateControl( name.."_PreviewCtrl", ctrl, CT_CONTROL )
     preview:ClearAnchors() 
-    preview:SetAnchor(TOPLEFT, ctrl, TOPLEFT, param.menuWidth, 300+(param.height-300)/2) 
-    preview:SetDimensions(param.width-param.menuWidth, (param.height-300)/2)  
-    local backPreview = WM:CreateControl( name.."_PrevieBg", preview, CT_BACKDROP) 
-    backPreview:ClearAnchors() 
-    backPreview:SetAnchor(TOPLEFT, preview, TOPLEFT, 0, 0) 
-    backPreview:SetDimensions( backPreview:GetParent():GetDimensions() )
-    backPreview:SetCenterColor(0,0,1,0.3)
+    preview:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 0, param.height-350) 
+    preview:SetDimensions(700, 350)
+    controls.preview = preview
 
-    --- Header 
-    local logo = WM:CreateControl( name.."_Logo", ctrl, CT_TEXTURE ) 
-    logo:ClearAnchors() 
-    logo:SetAnchor( TOPLEFT, ctrl, TOPLEFT )
-    logo:SetDimensions(50, 50)
-    logo:SetTexture( "/ExoYsProcSetTimer/textures/logo_100.dds" ) 
-
-    local title = WM:CreateControl( name.."_Title", ctrl, CT_LABEL )
-    title:ClearAnchors() 
-    title:SetAnchor( TOPLEFT, ctrl, TOPLEFT, 100, 0 ) 
-    title:SetFont( LibExoY.GetFont(50) ) 
-    title:SetColor( 211/255,175/255,55/255 )
-    title:SetText("ExoY's ProcSet Timer - Customizer")
-    title:SetDimensions( title:GetTextWidth(), 50 )
-    LibExoY.AnchorLabelText( title, LEFT )
+    --[[
+   
+     
+    --- Header    
     
-    
-
     --- Set/Profile Selection 
     local currentSet = WM:CreateControl( name.."_CurrentSet", ctrl, CT_LABEL) 
     currentSet:ClearAnchors() 
@@ -175,55 +187,18 @@ function Customizer:CreateControls( name )
     currentProfile:SetFont( LibExoY.GetFont() )
     currentProfile:SetText( EPT.pm:GetActiveProfileName() )
 
-    --- Submenu     
-    local slider1 = LibExoY.CreateSlider( name.."Slider1", ctrl, {offsetX = 300, offsetY = 300}) 
-    local slider2 = LibExoY.CreateSlider( name.."Slider2", ctrl, {offsetX = 500, offsetY = 300})
-    
-    local menuConfig = {
-        offsetX = 50, 
-        offsetY = 200, 
-        width = 200, 
-        height = 50, 
-    }
-    local menuObj = LibExoY.CreateMenu( name.."_Menu", ctrl, menuConfig ) 
-    menuObj:AddTab( "general" )
-    menuObj:AddTab( "test" )
-    self.menuObj = menuObj 
-
-
-    
-
     --- Display Demonstrator 
     -- GetSettingsBasedOnSelection( template, id) 
     --Customier.demo = LibExoY.CustomTracker() --- todo
 
-
     --Customizer.header = EPT.init.Customizer_header( Prefix.."_Header", ctrl, {offsetY = 50}) 
     --Customizer.menu = LibExoY.CreateMenu( Prefix.."_Menu", ctrl, {offsetY = 100} ) 
-
-    --[[
-
-    --- create option panels 
-    for name, data in panelData do 
-        local func = EPT.init["Initialize_panel_"..name]
-        Customizer.panel[name] = func( xxx )
-        Customizer.menu:AddTab( name, {
-            label = data.label, 
-            texture = data.texture,  
-        } )
-        Customizer.menu[name]:AssignPanel( Customizer.panels[name] )
-    end
-
-    ]] 
 
     ---ToDo concept / pseudo-code
     --local settings = SettingsOfCurrentSelection 
     --selectTheGeneralPanel 
 
     --Customizer.panel[name].ApplySettings( currentSettings )
-
-
-
 
     --- ToDo ctrls: 
     -- set selection window 
@@ -234,27 +209,152 @@ function Customizer:CreateControls( name )
     -- event/Getter: 
         -- wenn a setting is changed apply it to the demo obj 
         -- save it to the currently selected settings (template/ setId) 
-
+    ]]
     self.controls = controls
 end
 
 
+function Customizer:CreateHeader() 
+    local name = self.name.."_Header"
+    local ctrl = self.controls.header
+    local header = {}
+
+    local width, height = ctrl:GetDimensions() 
+
+    --- Temporary to show ctrlSize 
+    local back = WM:CreateControl( name.."Back", ctrl, CT_BACKDROP) 
+    back:ClearAnchors() 
+    back:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 0, 0) 
+    back:SetDimensions( width, height )
+    back:SetCenterColor(1,1,1,0.3)
+
+    local logo = WM:CreateControl( name.."Logo", ctrl, CT_TEXTURE ) 
+    logo:ClearAnchors() 
+    logo:SetAnchor( TOPLEFT, ctrl, TOPLEFT, 2.5, 2.5 )
+    logo:SetDimensions(height-5, height-5)
+    logo:SetTexture( "/ExoYsProcSetTimer/textures/logo_100.dds" ) 
+    header.logo = logo 
+
+    local mainTitle = WM:CreateControl( name.."MainTitle", ctrl, CT_LABEL )
+    mainTitle:ClearAnchors() 
+    mainTitle:SetAnchor( TOP, ctrl, TOP ) 
+    mainTitle:SetFont( LibExoY.GetFont(35) ) 
+    mainTitle:SetColor( 211/255,175/255,55/255 )
+    mainTitle:SetText("ExoY's ProcSet Timer")
+    mainTitle:SetDimensions( mainTitle:GetTextDimensions() )
+    LibExoY.AnchorLabelText( mainTitle, TOP )
+    header.mainTitle = mainTitle
+
+    local subTitle = WM:CreateControl( name.."SubTitle", ctrl, CT_LABEL )
+    subTitle:ClearAnchors() 
+    subTitle:SetAnchor( TOP, mainTitle, BOTTOM, 0, 0 ) 
+    subTitle:SetFont( LibExoY.GetFont(25) ) 
+    subTitle:SetColor( 1,1,1,1 )
+    subTitle:SetText("Customizer")
+    subTitle:SetDimensions( subTitle:GetTextWidth(), 50 )
+    LibExoY.AnchorLabelText( subTitle, TOP )
+    header.subTitle = subtitle 
+
+    local exitButton = WM:CreateControl( name.."ExitButton", ctrl, CT_BUTTON ) 
+    exitButton:ClearAnchors() 
+    exitButton:SetAnchor(TOPLEFT, ctrl, TOPLEFT)
+    header.exitButton = exitButton 
+
+    self.header = header 
+end
+
+function Customizer:CreateSelection( )
+    local name = self.name.."_Selection" 
+    local ctrl = self.controls.selection
+
+    --- Temporary to show ctrlSize 
+    local back = WM:CreateControl( name.."Back", ctrl, CT_BACKDROP) 
+    back:ClearAnchors() 
+    back:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 0, 0) 
+    back:SetDimensions( ctrl:GetDimensions() )
+    back:SetCenterColor(0,1,1,0.3)
+    local label = WM:CreateControl( name.."Label", ctrl, CT_LABEL) 
+    label:ClearAnchors() 
+    label:SetAnchor(CENTER, back, CENTER, 0, 0) 
+    label:SetColor(1,1,1,1) 
+    label:SetFont(LibExoY.GetFont(40))
+    label:SetText("Selection")
+    LibExoY.AnchorLabelText(label, CENTER) 
+end
+
+function Customizer:CreateMenu()
+    local name = self.name.."_Menu"   
+    local ctrl = self.controls.menu 
+
+    --- Temporary to show ctrlSize 
+    local back = WM:CreateControl( name.."Back", ctrl, CT_BACKDROP) 
+    back:ClearAnchors() 
+    back:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 0, 0) 
+    back:SetDimensions( ctrl:GetDimensions() )
+    back:SetCenterColor(1,0,0,0.3)
+    local label = WM:CreateControl( name.."Label", ctrl, CT_LABEL) 
+    label:ClearAnchors() 
+    label:SetAnchor(CENTER, back, CENTER, 0, 0) 
+    label:SetColor(1,1,1,1) 
+    label:SetFont(LibExoY.GetFont(40))
+    label:SetText("Menu")
+    LibExoY.AnchorLabelText(label, CENTER) 
+
+    local configMenu = {
+        tabDirection = "vertical", 
+        offsetX = 50, 
+        offsetY = 200, 
+        width = 200, 
+        height = 50, 
+    }
+
+    local menu = LibExoY.CreateMenu( name, ctrl, configMenu ) 
+    self.menu = menu 
+end
+
+function Customizer:CreatePreview( )
+    local name = self.name.."_Preview" 
+    local ctrl = self.controls.preview 
+
+    --- Temporary to show ctrlSize 
+    local back = WM:CreateControl( name.."Back", ctrl, CT_BACKDROP) 
+    back:ClearAnchors() 
+    back:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 0, 0) 
+    back:SetDimensions( ctrl:GetDimensions() )
+    back:SetCenterColor(1,1,0,0.3)
+    local label = WM:CreateControl( name.."Label", ctrl, CT_LABEL) 
+    label:ClearAnchors() 
+    label:SetAnchor(CENTER, back, CENTER, 0, 0) 
+    label:SetColor(1,1,1,1) 
+    label:SetFont(LibExoY.GetFont(40))
+    label:SetText("Preview")
+    LibExoY.AnchorLabelText(label, CENTER) 
+end
 
 
-function Customizer:OpenWindow( setId, isTemplate )
-    -- when isTemplate dann is setId = setClass constant 
+function Customizer:CreateInfo( )
+    local name = self.name.."_Info" 
+    local ctrl = self.controls.info 
 
-    -- input tells the window how to initialize itself, 
-    -- with respect to which template/set to load 
-    -- this way i can move the setup of all the panels and stuff outside of the initialization end
-
+    --- Temporary to show ctrlSize 
+    local back = WM:CreateControl( name.."Back", ctrl, CT_BACKDROP) 
+    back:ClearAnchors() 
+    back:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 0, 0) 
+    back:SetDimensions( ctrl:GetDimensions() )
+    back:SetCenterColor(0,1,0,0.3)
+    local label = WM:CreateControl( name.."Label", ctrl, CT_LABEL) 
+    label:ClearAnchors() 
+    label:SetAnchor(CENTER, back, CENTER, 0, 0) 
+    label:SetColor(1,1,1,1) 
+    label:SetFont(LibExoY.GetFont(40))
+    label:SetText("Info")
+    LibExoY.AnchorLabelText(label, CENTER) 
 end
 
 
 
-function Customizer:CloseWindow() 
-    -- apply new settings to all relevant active tracker objeects 
-    -- 
-end
+
+
+
 
 
