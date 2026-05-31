@@ -112,11 +112,8 @@ function Customizer:CreateControls( )
     local controls = {}
     local name = self.name
 
-    --- Dimensions    
-    local screenWidth, screenHeight = GuiRoot:GetDimensions()
-    
+    --- Dimensions      
     local dim = self:CalculateCtrlDimensions() 
-    exoydevvar = dim 
 
     local win = WM:CreateTopLevelWindow( name.."_Window" ) 
     win:ClearAnchors() 
@@ -206,12 +203,6 @@ function Customizer:CreateControls( )
     }
     local setSelection = LibExoY.CreateDropdown( name.."_SetSelection", ctrl, setSelectionConfig )  
 
-    local currentProfile = WM:CreateControl( name.."_CurrentProfile", ctrl, CT_LABEL) 
-    currentProfile:ClearAnchors() 
-    currentProfile:SetAnchor( TOPLEFT, ctrl, TOPLEFT, 50, 200) 
-    currentProfile:SetFont( LibExoY.GetFont() )
-    currentProfile:SetText( EPT.pm:GetActiveProfileName() )
-
     --- Display Demonstrator 
     -- GetSettingsBasedOnSelection( template, id) 
     --Customier.demo = LibExoY.CustomTracker() --- todo
@@ -288,6 +279,7 @@ function Customizer:CreateHeader()
     self.header = header 
 end
 
+
 function Customizer:CreateSelection( )
     local name = self.name.."_Selection" 
     local ctrl = self.controls.selection
@@ -303,9 +295,55 @@ function Customizer:CreateSelection( )
     label:SetAnchor(CENTER, back, CENTER, 0, 0) 
     label:SetColor(1,1,1,1) 
     label:SetFont(LibExoY.GetFont(40))
-    label:SetText("Selection")
+    --label:SetText("Selection")
     LibExoY.AnchorLabelText(label, CENTER) 
+
+    --- Profile Selection 
+    --local 
+    local profileSelectionConfig = {
+        choices = EPT.pm:GetProfileList(),
+        -- for current value:  EPT.pm:GetActiveProfileName()
+        offsetX = 50,
+        offsetY = 100, 
+        OnItemSelected = function(_, selected) LibExoY.Print("Change Profile", "EPT-Customizer") end,  
+    }
+    local profileSelection = LibExoY.CreateDropdown( name.."_ProfileDropdown", ctrl, profileSelectionConfig )
+
+    --- Set Selection  
+    --local currentSet = WM:CreateControl( name.."_CurrentSet", ctrl, CT_LABEL) 
+    --currentSet:ClearAnchors() 
+    --currentSet:SetAnchor( TOPLEFT, ctrl, TOPLEFT, 50, 100) 
+    --currentSet:SetFont( LibExoY.GetFont() )
+    --currentSet:SetText( EPT.supportedSetNames[1] ) 
+    local setSelectionConfig = {
+        choices = EPT.sets.setName,
+        offsetX = 50,
+        offsetY = 200, 
+        OnItemSelected = function(_, selected) LibExoY.Print("Changed Set", "EPT-Customizer") end,  
+    }
+    local setSelection = LibExoY.CreateDropdown( name.."_SetsDropdown", ctrl, setSelectionConfig ) 
+    
+    local searchBox = WM:CreateControl( name.."SearchBox", ctrl, CT_EDITBOX)
+    searchBox:ClearAnchors() 
+    searchBox:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 100, 150) 
+    searchBox:SetDimensions( 100, 40 ) 
+    searchBox:SetFont( LibExoY.GetFont() ) 
+    searchBox:SetText() 
+    searchBox:SetMouseEnabled(true) 
+    searchBox:SetTextType(TEXT_TYPE_ALL)
+    searchBox:SetHandler("OnMouseDown", function() searchBox:TakeFocus() end)
+    searchBox:SetHandler("OnTextChanged", function() d(searchBox:GetText() ) end )
+    searchBox:SetHandler("OnFocusLost", function() d(searchBox:GetText() ) end) 
+
+    local searchBack = WM:CreateControl( name.."SearchBg", ctrl, CT_BACKDROP )
+    searchBack:ClearAnchors() 
+    searchBack:SetAnchor(CENTER, searchBox, CENTER, 0, 0) 
+    searchBack:SetDimensions( searchBox:GetDimensions() ) 
+    searchBack:SetCenterColor(0.2, 0.2, 0.2, 0.8 ) 
+    searchBack:SetEdgeColor(0,0,0,0.9) 
+    searchBack:SetEdgeTexture(nil, 2,2,2)
 end
+
 
 function Customizer:CreateMenu()
     local name = self.name.."_Menu"   
@@ -337,6 +375,7 @@ function Customizer:CreateMenu()
     self.menu = menu 
 end
 
+
 function Customizer:CreatePreview( )
     local name = self.name.."_Preview" 
     local ctrl = self.controls.preview 
@@ -346,14 +385,32 @@ function Customizer:CreatePreview( )
     back:ClearAnchors() 
     back:SetAnchor(TOPLEFT, ctrl, TOPLEFT, 0, 0) 
     back:SetDimensions( ctrl:GetDimensions() )
-    back:SetCenterColor(1,1,0,0.3)
+    back:SetCenterColor(0,0,0,1)
+    back:SetAlpha(0.5)
     local label = WM:CreateControl( name.."Label", ctrl, CT_LABEL) 
     label:ClearAnchors() 
     label:SetAnchor(CENTER, back, CENTER, 0, 0) 
     label:SetColor(1,1,1,1) 
     label:SetFont(LibExoY.GetFont(40))
     label:SetText("Preview")
-    LibExoY.AnchorLabelText(label, CENTER)
+    LibExoY.AnchorLabelText(label, CENTER) 
+
+    local alphaSliderConfig = {
+        min = 0, 
+        max = 1, 
+        step = 0.1,
+        value = 0.5, 
+        text = "Background Transparency", 
+        anchorChild = BOTTOMLEFT, 
+        anchorParent = BOTTOMLEFT, 
+        OnValueChanged = function(value) 
+            back:SetAlpha(value) 
+        end,
+    }
+    local alphaSlider = LibExoY.CreateSlider( name.."AlphaSlider", ctrl, alphaSliderConfig)
+
+    --local demoScaleSlider =
+
 end
 
 

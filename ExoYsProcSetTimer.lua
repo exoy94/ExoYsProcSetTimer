@@ -12,8 +12,14 @@ local EM = GetEventManager()
 --[[ Notes ]]
 --- Task-List 
 -- [ ] check which event (2240 or 2245) is more working for more sets for basic proc 
--- [ ] think about tables such es "supportedSets" and "supportedSetNames"
--- [ ] update naming in slider and add resize function 
+-- [ ] update naming in slider and add resize function
+-- [ ] profile change in customizer 
+-- [ ] debug and comment profile manager 
+-- [ ] set selection dropdown (search field + update dropdown selection)
+-- [ ] automatic update of search dropdown based on search text 
+-- [ ] detection if search text is number and then only compare with setId 
+-- [ ] show setIds as option 
+-- [ ] 
 
 --- 
 EPT.name = "ExoYsProcSetTimer"
@@ -70,15 +76,18 @@ local function Initialize()
     --- Variable Definition (Temporary)
     if GetUnitDisplayName("player") == "@ExoY94" then EPT.debug = true end
 
-    -- list of sets supported by EPT for LSD event filter
-    local supportedSets = {}
-    for setId, _ in pairs( EPT.GetDatabase() ) do
-        table.insert( supportedSets, setId) 
+    --- Supported Sets 
+    EPT.sets = {}   -- collection of lookup tables 
+    local Sets = EPT.sets
+    Sets.setIds = {}    -- numeric table with all supported setIds
+    Sets.setClass = {}  -- key is setId, value is setClass (used fot template mapping) 
+    Sets.setName = {}   -- key is setId, value is setname 
+    for setId, setData in pairs( EPT.GetDatabase() ) do 
+        table.insert( Sets.setIds, setId ) 
+        Sets.setName[setId] = LSD.GetSetName( setId ) 
+        Sets.setClass[setId] = setData.class 
     end
-    EPT.supportedSetNames = {  }    --- @ToDo 
-    for _, setId in ipairs(supportedSets) do 
-        table.insert(EPT.supportedSetNames, LSD.GetSetName(setId) )
-    end
+    table.sort( Sets.setIds )
 
     --- Saved Variables 
     local AddonSettingsParameter = {
@@ -97,7 +106,6 @@ local function Initialize()
         profileSettingsControls = { },
         esoui = "info2783-ExoYsProcSetTimer.html", 
     }  
-
     EPT.sv, EPT.pm = LibExoY.InitializeAddonSettings( AddonSettingsParameter )
 
     --- User Interace 
@@ -116,8 +124,7 @@ local function Initialize()
     EPT.setTrackerClass = nil   -- clean up distribution table for initialization 
     
     --- Register with LibSetDetection 
-
-    local resultLSD = LSD.RegisterEvent( LSD_EVENT_SET_CHANGE, EPT.name, OnSetChange, LSD_UNIT_TYPE_PLAYER, supportedSets)
+    local resultLSD = LSD.RegisterEvent( LSD_EVENT_SET_CHANGE, EPT.name, OnSetChange, LSD_UNIT_TYPE_PLAYER, Sets.setIds)
     if EPT.debug then 
         if resultLSD == 0 then 
             local debugStr = "Registration with LibSetDetection "..LibExoY.ColorString("successful", "green") 
@@ -131,26 +138,24 @@ local function Initialize()
     --- Register Events 
     -- combat state 
 
-
     --- Slash Commands 
     local subCmdTable = {
         ["supportedSets"] = { 
             info = "lists all supported sets", 
             callback = function() 
-                table.sort(supportedSets) 
+                table.sort(Sets.setIds) 
                 LibExoY.Print("complete list of all sets included", {"EPT - Supported Sets"})
-                for idx, setId in ipairs( supportedSets ) do 
+                for idx, setId in ipairs( Sets.setIds ) do 
                     local setInfo = zo_strformat("[<<1>>] <<2>>", LibExoY.ColorString( tostring(setId), "white"), EPT.GetSetData(setId).itemLink) 
                     d(setInfo)
                 end
             end,
         }, 
     }
-
     local tmpCmd = function() 
-                table.sort(supportedSets) 
+                table.sort(Sets.setIds) 
                 LibExoY.Print("complete list of all sets included", {"EPT - Supported Sets"})
-                for idx, setId in ipairs( supportedSets ) do 
+                for idx, setId in ipairs( Sets.setIds ) do 
                     local setInfo = zo_strformat("[<<1>>] <<2>>", LibExoY.ColorString( tostring(setId), "white"), EPT.GetSetData(setId).itemLink) 
                     d(setInfo)
                 end
