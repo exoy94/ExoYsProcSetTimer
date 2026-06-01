@@ -11,6 +11,13 @@ local SetTrackerMain = {}
 EPT.setTrackerClass = EPT.setTrackerClass or {} -- distribution table for initialization
 EPT.setTrackerClass.main = SetTrackerMain 
 
+EPT.defaults = EPT.defaults or {} 
+EPT.defaults.setTracker = EPT.defaults.setTracker or {}
+EPT.defaults.setTracker["main"] = {
+
+}
+
+
 
 --- Constructor for subclasses and tracker objects 
 -- definition of classes when *setId* = nil 
@@ -65,4 +72,29 @@ function SetTrackerMain:RemoveFromScenes()
         HUD_UI_SCENE:RemoveFragment( fragment )
         HUD_SCENE:RemoveFragment( fragment )
     end
+end
+
+--- Configuration 
+
+
+--- @ToDo not finalized >>> actually, move this to  
+function SetTrackerMain:DefineConfigTable() 
+
+    local setId = self.setId 
+    local class = EPT.GetSetClass( setId )
+    
+    --local meta = setmetatable(  )
+    --EPT.sv.p.setConfig[setId],  
+    
+
+    if class == "special" then
+        -- no class template 
+    else 
+
+    end 
+
+
+    
+    
+
 end

@@ -12,7 +12,11 @@ local SetTrackerProc = {}
 EPT.setTrackerClass = EPT.setTrackerClass or {}
 EPT.setTrackerClass.proc = SetTrackerProc 
 
+EPT.defaults = EPT.defaults or {} 
+EPT.defaults.setTracker = EPT.defaults.setTracker or {}
+EPT.defaults.setTracker["proc"] = {
 
+}
 
 
 function SetTrackerProc:Initialize( ) 

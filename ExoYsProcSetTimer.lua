@@ -25,6 +25,9 @@ local EM = GetEventManager()
 EPT.name = "ExoYsProcSetTimer"
 EPT.version = "3.0.0"
 
+EPT.setTrackerClassList = {
+    "proc", 
+}
 
 --[[ ------------ ]]
 --[[ -- Events -- ]]
@@ -51,22 +54,58 @@ local function OnSetChange( setId, changeType, _, _, activeType )
 end
 
 
+--[[ Config - Temporary ]]
+
+local function GetConfig( setId )
+
+    --- pseudo-code 
+    -- get setSV 
+    --      check, if there are any sv for this set 
+    --      ToDo, start a setSV table only if there is at least one parameter different then class template 
+    --      if the last one is removed also remove the sv table to keep sv-file as small as possible 
+    -- get setDefault (only unique set properties) 
+    -- get setClass 
+    -- get classSV 
+    -- get classDefault (only unique class properties)  
+    -- get standardSv 
+    -- get standardDefault 
+
+    -- build config table 
+
+    --- Note: define meta-tables for standard and class sv one time 
+    -- have the class sv table already include the standard table?! 
+
+    -- maybe do this during class initialization  
+    -- unclude the function to get the final set config in main class file 
+    -- can even include the stuff for the class config and defaults in main clas 
+    -- just need to be consistent with naming 
+
+end
+
+
 --[[ -------------------- ]]
 --[[ -- Initialization -- ]]
 --[[ -------------------- ]]
 
-local function GetGlobalDefaults() 
-    defaults = {
-        customizer = {
-            scale = 1,  
-        },
-    }
-    return defaults 
-end
+EPT.defaults = EPT.defaults or {} 
 
-local function GetProfileDefaults() 
-    defaults = {}
-    return defaults   
+EPT.defaults["global"] = {
+
+
+} 
+
+EPT.defaults["profile"] = {
+    setTracker = {
+        main = {},
+        classes = {}, 
+        sets = {},
+    }
+} 
+
+do 
+    for _, class in ipairs( EPT.setTrackerClassList ) do 
+        EPT.defaults.profile.setTracker.classes[class] = {}
+    end
 end
 
 
@@ -96,8 +135,8 @@ local function Initialize()
 
         --- Saved Variables 
         storeVersion = 1, 
-        globalDefaults = GetGlobalDefaults(),
-        profileDefaults = GetProfileDefaults(),
+        globalDefaults = EPT.defaults.global,
+        profileDefaults = EPT.defaults.profile,
         OnProfileChange = function(newProfile, oldProfile) end, 
 
         --- Settings Menu
@@ -118,11 +157,33 @@ local function Initialize()
     local SetTracker = EPT.setTrackerClass  -- distribution table for initializatino 
     EPT.setTracker = SetTracker.handler:New() 
     -- define subclass for each set-type (main is superclass)
-    EPT.setTracker.classes.proc = SetTracker.main:New( SetTracker["proc"] )
+    for _, class in ipairs( EPT.setTrackerClassList ) do 
+        EPT.setTracker.classes[class] = SetTracker.main:New( SetTracker[class] ) 
+    end 
+    --EPT.setTracker.classes.proc = SetTracker.main:New( SetTracker["proc"] )   --- Replaced by previous loop 
     -- table for sets with special behavior to define individual classes instances
     EPT.setTracker.specialSets = SetTracker.specialSets or {}
     EPT.setTrackerClass = nil   -- clean up distribution table for initialization 
+    SetTracker = EPT.setTracker -- changed to handler 
+
+
+    --- Build Config Tables  
+    EPT.configs = {}
+
+    --- @ToDo passt noch nicht ganzm weil so brauch ich schon in den sv eine tabelle für jede config, auch wenn sie leer ist (potentiell das gleiche für sets) 
+    -- aber die class liste wäre erst nach der Handler definition verfügbar, bräuchte sie aber für die erzeugung der default 
+    --. tabelle für die sv 
+    EPT.configs["setTracker"] = {} 
+
+    local SetTrackerConfig = EPT.configs.setTracker
+    local SetTrackerDefault = EPT.defaults.setTracker
+    SetTrackerConfig["main"] = setmetatable(EPT.sv.p.setTracker.main, {__index = SetTrackerDefault.main})
+    for _, class in ipairs( EPT.setTrackerClassList ) do 
+        local classConfigDefault = setmetatable( SetTrackerDefault[class], {__index = SetTrackerConfig["main"]} )
+        SetTrackerConfig[ class ] = setmetatable(EPT.sv.p.setTracker.classes[class], {__index = classConfigDefault } )
+    end
     
+
     --- Register with LibSetDetection 
     local resultLSD = LSD.RegisterEvent( LSD_EVENT_SET_CHANGE, EPT.name, OnSetChange, LSD_UNIT_TYPE_PLAYER, Sets.setIds)
     if EPT.debug then 
