@@ -137,8 +137,9 @@ local function Initialize()
         storeVersion = 1, 
         globalDefaults = EPT.defaults.global,
         profileDefaults = EPT.defaults.profile,
-        OnProfileChange = function(newProfile, oldProfile) end, 
-
+        OnProfileChange = function(newProfile, oldProfile) LibExoY.Print(newProfile, "EPT-ProfileChange") end, 
+        OnProfileListUpdate = function( newList ) LibExoY.Print("Profile List Update", "EPT") d(newList) end,  
+        
         --- Settings Menu
         addonVersion = "3.0.0", 
         globalSettingsControls = { },
@@ -183,7 +184,6 @@ local function Initialize()
         SetTrackerConfig[ class ] = setmetatable(EPT.sv.p.setTracker.classes[class], {__index = classConfigDefault } )
     end
     
-
     --- Register with LibSetDetection 
     local resultLSD = LSD.RegisterEvent( LSD_EVENT_SET_CHANGE, EPT.name, OnSetChange, LSD_UNIT_TYPE_PLAYER, Sets.setIds)
     if EPT.debug then 
