@@ -54,34 +54,20 @@ local function OnSetChange( setId, changeType, _, _, activeType )
 end
 
 
---[[ Config - Temporary ]]
 
-local function GetConfig( setId )
+--[[ Config ]]
 
-    --- pseudo-code 
-    -- get setSV 
-    --      check, if there are any sv for this set 
-    --      ToDo, start a setSV table only if there is at least one parameter different then class template 
-    --      if the last one is removed also remove the sv table to keep sv-file as small as possible 
-    -- get setDefault (only unique set properties) 
-    -- get setClass 
-    -- get classSV 
-    -- get classDefault (only unique class properties)  
-    -- get standardSv 
-    -- get standardDefault 
+--- @ToDo naming and placement --> probably to handler?  
 
-    -- build config table 
-
-    --- Note: define meta-tables for standard and class sv one time 
-    -- have the class sv table already include the standard table?! 
-
-    -- maybe do this during class initialization  
-    -- unclude the function to get the final set config in main class file 
-    -- can even include the stuff for the class config and defaults in main clas 
-    -- just need to be consistent with naming 
-
+function EPT.BuildSetTrackerClassConfigs() 
+    local SetTrackerConfig = EPT.configs.setTracker
+    local SetTrackerDefault = EPT.defaults.setTracker
+    SetTrackerConfig["main"] = setmetatable(EPT.sv.p.setTracker.main, {__index = SetTrackerDefault.main})
+    for _, class in ipairs( EPT.setTrackerClassList ) do 
+        local classConfigDefault = setmetatable( SetTrackerDefault[class], {__index = SetTrackerConfig["main"]} )
+        SetTrackerConfig[ class ] = setmetatable(EPT.sv.p.setTracker.classes[class], {__index = classConfigDefault } )
+    end    
 end
-
 
 --[[ -------------------- ]]
 --[[ -- Initialization -- ]]
@@ -97,7 +83,7 @@ EPT.defaults["global"] = {
 EPT.defaults["profile"] = {
     setTracker = {
         main = {},
-        classes = {}, 
+        classes = {}, -- contains subtables for each subclass 
         sets = {},
     }
 } 
@@ -137,7 +123,12 @@ local function Initialize()
         storeVersion = 1, 
         globalDefaults = EPT.defaults.global,
         profileDefaults = EPT.defaults.profile,
-        OnProfileChange = function(newProfile, oldProfile) LibExoY.Print(newProfile, "EPT-ProfileChange") end, 
+        OnProfileChange = function(newProfile, oldProfile) 
+            LibExoY.Print(newProfile, "EPT-ProfileChange") 
+            d("Rebuild Class Config")
+            EPT.BuildSetTrackerClassConfigs()
+            ---@ToDo each tracker needs to rebuild its individual config table and then apply the settings
+        end, 
         OnProfileListUpdate = function( newList ) LibExoY.Print("Profile List Update", "EPT") d(newList) end,  
         
         --- Settings Menu
@@ -175,14 +166,10 @@ local function Initialize()
     -- aber die class liste wäre erst nach der Handler definition verfügbar, bräuchte sie aber für die erzeugung der default 
     --. tabelle für die sv 
     EPT.configs["setTracker"] = {} 
-
-    local SetTrackerConfig = EPT.configs.setTracker
-    local SetTrackerDefault = EPT.defaults.setTracker
-    SetTrackerConfig["main"] = setmetatable(EPT.sv.p.setTracker.main, {__index = SetTrackerDefault.main})
-    for _, class in ipairs( EPT.setTrackerClassList ) do 
-        local classConfigDefault = setmetatable( SetTrackerDefault[class], {__index = SetTrackerConfig["main"]} )
-        SetTrackerConfig[ class ] = setmetatable(EPT.sv.p.setTracker.classes[class], {__index = classConfigDefault } )
-    end
+    EPT.BuildSetTrackerClassConfigs()
+    --- @ToDo or something like
+    SetTracker:BuildClassConfigs() 
+    
     
     --- Register with LibSetDetection 
     local resultLSD = LSD.RegisterEvent( LSD_EVENT_SET_CHANGE, EPT.name, OnSetChange, LSD_UNIT_TYPE_PLAYER, Sets.setIds)
@@ -213,14 +200,40 @@ local function Initialize()
             end,
         }, 
     }
-    local tmpCmd = function() 
-                table.sort(Sets.setIds) 
-                LibExoY.Print("complete list of all sets included", {"EPT - Supported Sets"})
-                for idx, setId in ipairs( Sets.setIds ) do 
-                    local setInfo = zo_strformat("[<<1>>] <<2>>", LibExoY.ColorString( tostring(setId), "white"), EPT.GetSetData(setId).itemLink) 
-                    d(setInfo)
-                end
-            end
+    local tmpCmd = function() --- testing config concept
+        local defaults = EPT.defaults.setTracker
+        local config = EPT.configs.setTracker["proc"] 
+        LibExoY.Print("Config Test", "EPT")
+        local function printState() 
+        d("default values") 
+        d(defaults)
+        d("----")
+        d("saved variables") 
+        d(EPT.sv.p.setTracker) 
+        d("----")
+        d("config values") 
+        d(config.size) 
+        d(config.color) 
+        d("----") 
+        end
+        printState() 
+        
+        --routine = "addSV"
+        if routine == "addSV" then 
+            LibExoY.Print("add to saved vars", "EPT")
+            d("size to 20")
+            EPT.sv.p.setTracker.main.size = 20
+            d("color to blue")
+            EPT.sv.p.setTracker.classes.proc.color = "blue"  
+            printState() 
+        elseif routine == "deleteSV" then 
+            LibExoY.Print("reset sv values to default ", "EPT")   
+            EPT.sv.p.setTracker.main.size = nil
+            EPT.sv.p.setTracker.classes.proc.color = nil
+            printState()   
+        end
+
+    end
     LibExoY.AddSlashCmd( "/ept", tmpCmd)--, "ExoYsProcSetTimer - ChatCommands", subCmdTable)
 
 end

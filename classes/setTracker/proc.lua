@@ -15,7 +15,7 @@ EPT.setTrackerClass.proc = SetTrackerProc
 EPT.defaults = EPT.defaults or {} 
 EPT.defaults.setTracker = EPT.defaults.setTracker or {}
 EPT.defaults.setTracker["proc"] = {
-
+    color = "red", 
 }
 
 

@@ -14,7 +14,7 @@ EPT.setTrackerClass.main = SetTrackerMain
 EPT.defaults = EPT.defaults or {} 
 EPT.defaults.setTracker = EPT.defaults.setTracker or {}
 EPT.defaults.setTracker["main"] = {
-
+    size = 50,
 }
 
 
@@ -74,27 +74,36 @@ function SetTrackerMain:RemoveFromScenes()
     end
 end
 
+
 --- Configuration 
 
 
 --- @ToDo not finalized >>> actually, move this to  
-function SetTrackerMain:DefineConfigTable() 
+function SetTrackerMain:BuildConfigTable() 
 
     local setId = self.setId 
     local class = EPT.GetSetClass( setId )
     
+    local templates = EPT.setTracker.configTemplates
+
+    -- loading set specific save variables, if they exist
+    local setSV = EPT.sv.p.setTracker.sets[setId] or {}
+
+    -- check if there are any set specific default values
+    -- this in theory can also be the case without the set being a special class
+    -- if it is only a derivative of an existing class 
+    local setDefaults = EPT.defaults.setTracker.sets[setId] or {}
+
+    -- check if set has entires in 
     --local meta = setmetatable(  )
     --EPT.sv.p.setConfig[setId],  
     
-
     if class == "special" then
         -- no class template 
+        local setConfigDefault = setmetatable( setDefaults, {__index = templates[ "main" ]})
+        return  setmetatable( setSV, {__index = setConfigDefault })
     else 
-
+        local setConfigDefault = setmetatable( setDefaults, {__index = templates[ class ]})
+        return  setmetatable( setSV, {__index = setConfigDefault })
     end 
-
-
-    
-    
-
 end

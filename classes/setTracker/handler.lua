@@ -26,7 +26,12 @@ function SetTrackerHandler:New()
     obj.classes = {} -- template objects of all standard set classes 
     obj.specialSets = {} -- subclass definitions for unique sets 
     obj.objectRegistry = {}    -- list of all existing set tracker objects (no pool) 
-    obj.activeObjects = {}    -- list (numeric) of all active tracker objects by *setId*
+    obj.activeObjects = {}    -- list (numeric) of all active tracker objects by *setId* 
+
+    obj.configTemplates = { main = {} } 
+    for _, class in ipairs( EPT.setTrackerClassList ) do 
+        obj.configTemplates[class] = {}
+    end
 
     return obj 
 end
@@ -74,4 +79,26 @@ function SetTrackerHandler:DeactivateObj( setId )
     table.remove(self.activeObjects, objIdx )
 
     obj:Deactivate() --e.g., unregister events, remove fragments from scenes...
+end
+
+
+
+function SetTrackerHandler:BuildConfigTemplates()
+    local config = self.configTemplates 
+    local defaults = EPT.defaults.setTracker 
+    
+    local defaults = EPT.defaults.setTracker
+    config["main"] = setmetatable(EPT.sv.p.setTracker.main, {__index = defaults.main})
+    for _, class in ipairs( EPT.setTrackerClassList ) do 
+        local classConfigDefault = setmetatable( defaults[class], {__index = config["main"]} )
+        config[ class ] = setmetatable(EPT.sv.p.setTracker.classes[class], {__index = classConfigDefault } )
+    end        
+end
+
+
+function SetTrackerHandler:UpdateConfigTables() 
+    --- @ToDo 
+    -- for each existing set tracker do 
+    -- build config table 
+    -- apply configs 
 end

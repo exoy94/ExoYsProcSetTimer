@@ -118,7 +118,7 @@ function Customizer:CreateControls( )
     local win = WM:CreateTopLevelWindow( name.."_Window" ) 
     win:ClearAnchors() 
     win:SetAnchor( CENTER, GuiRoot, CENTER, 0, 0 ) 
-    win:SetHidden(false)
+    win:SetHidden(true)
     win:SetDrawTier( DT_HIGH )
     win:SetDimensions( dim.width, dim.height )
     --- ToDo Handlers
