@@ -4,6 +4,7 @@ local EPT = ExoYsProcSetTimer
 --- Libraries 
 local LibExoY = LibExoYsUtilities
 local LSD = LibSetDetection
+local LSD_C = LSD.constants 
 
 --- ZOS Objects 
 local EM = GetEventManager()
@@ -52,16 +53,16 @@ local function OnSetChange( setId, changeType, _, _, activeType )
         LibExoY.Debug( debugStr, {"EPT-SetChange"})
     end
     --- supported set was equipped 
-    if changeType == LSD_CHANGE_TYPE_ACTIVATED then 
+    if changeType == LSD_C.change_type_activated then 
         EPT.setTracker:ActivateObj( setId ) 
     end 
     --- supported set was unequipped 
-    if changeType == LSD_CHANGE_TYPE_DEACTIVATED then 
+    if changeType == LSD_C.change_type_deactivated then 
         EPT.setTracker:DeactivateObj( setId ) 
     end 
 
     --- active bars of set changed, but it remained "activated"
-    if changeType == LSD_CHANGE_TYPE_UPDATED then 
+    if changeType == LSD_C.change_type_updated then 
         
     end
 end
@@ -161,17 +162,18 @@ local function Initialize()
     
     
     --- Register with LibSetDetection 
-    local resultLSD = LSD.RegisterEvent( LSD_EVENT_SET_CHANGE, EPT.name, OnSetChange, LSD_UNIT_TYPE_PLAYER, Sets.setIds)
+    local resultLSD = LSD.RegisterEvent( LSD_C.event_set_change, EPT.name, OnSetChange, LSD_C.unit_type_player, Sets.setIds)
     if EPT.debug then 
         if resultLSD == 0 then 
             local debugStr = "Registration with LibSetDetection "..LibExoY.ColorString("successful", "green") 
             LibExoY.Print( debugStr, {"EPT-Init"}) 
         else 
-            local debugStr = "Registration with LibSetDetection "..LibExoY.ColorString("failed", "red") 
+            local debugStr = "Registration with LibSetDetection "..LibExoY.ColorString("failed", "red").." (error code: "..tostring(resultLSD)..")"
             LibExoY.Print( debugStr, {"EPT-Init"}) 
         end
     end  
 
+    
     --- Register Events 
     -- combat state 
 
