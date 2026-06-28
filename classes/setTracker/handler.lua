@@ -96,9 +96,11 @@ function SetTrackerHandler:BuildConfigTemplates()
 end
 
 
-function SetTrackerHandler:UpdateConfigTables() 
-    --- @ToDo 
-    -- for each existing set tracker do 
-    -- build config table 
-    -- apply configs 
+
+function SetTrackerHandler:UpdateConfigs() 
+    for _, setId in ipairs( self.activeObjects ) do 
+        local obj = self.objectRegistry[setId] 
+        obj:BuildConfigTable() 
+        --obj:ApplyConfigs() --- @ToDo 
+    end
 end

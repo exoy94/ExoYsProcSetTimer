@@ -36,7 +36,8 @@ function SetTrackerProc:Initialize( )
     }
     self.indicator = LibExoY.CreateTracker( self.name.."_Indicator" )
 
-    table.insert( self.sceneFragments, ZO_HUDFadeSceneFragment:New( self.indicator.controls.win ))     
+    table.insert( self.sceneFragments, ZO_HUDFadeSceneFragment:New( self.indicator.controls.win ))
+         
 end
 
 

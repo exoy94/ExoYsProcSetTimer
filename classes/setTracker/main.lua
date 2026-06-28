@@ -22,25 +22,27 @@ EPT.defaults.setTracker["main"] = {
 --- Constructor for subclasses and tracker objects 
 -- definition of classes when *setId* = nil 
 -- Obj also used to define subclasses for special sets 
-function SetTrackerMain:New( Obj, setId ) 
-    Obj = setmetatable(Obj or {}, self)
+function SetTrackerMain:New( obj, setId ) 
+    obj = setmetatable(obj or {}, self)
     self.__index = self 
 
     if setId then 
         -- general properties relevant for every tracker objet 
-        Obj.setId = setId 
-        Obj.name = "EPT_SetTracker_"..tostring(setId)
-        Obj.sceneFragments = {} -- table of fragements for scenes 
+        obj.setId = setId 
+        obj.name = "EPT_SetTracker_"..tostring(setId)
+        obj.sceneFragments = {} -- table of fragements for scenes 
         -- setData properties for every tracker object 
         -- class specific variables defined in class-initialization routine
         local setDataMetaIndex = { 
             setName = LSD.GetSetName( setId ), 
             setType = LSD.GetSetType( setId ), 
         }
-        Obj.setData = setmetatable( EPT.GetSetData( setId ), {__index = setDataMetaIndex} )
+        obj.setData = setmetatable( EPT.GetSetData( setId ), {__index = setDataMetaIndex} )
     end
 
-    return Obj
+    obj:BuildConfigTable() 
+
+    return obj
 end
 
 
@@ -80,7 +82,7 @@ end
 
 --- @ToDo not finalized >>> actually, move this to  
 function SetTrackerMain:BuildConfigTable() 
-
+    if true then return end --- @ToDo 
     local setId = self.setId 
     local class = EPT.GetSetClass( setId )
     

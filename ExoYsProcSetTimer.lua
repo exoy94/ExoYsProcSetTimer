@@ -11,6 +11,7 @@ local EM = GetEventManager()
 
 --[[ Notes ]]
 --- Task-List 
+-- [ ] change to new lsd constants
 -- [ ] check which event (2240 or 2245) is more working for more sets for basic proc 
 -- [ ] update naming in slider and add resize function
 -- [ ] profile change in customizer 
@@ -19,12 +20,23 @@ local EM = GetEventManager()
 -- [ ] automatic update of search dropdown based on search text 
 -- [ ] detection if search text is number and then only compare with setId 
 -- [ ] show setIds as option 
--- [ ] 
+
+--- Concept: 
+-- in dem moment, wo ich bei meinem setTracker obj von der lib mehr mache als die standard ui elements zu nutzen 
+--  zählt das set zu special sets  / subclass e.g. second icon, second tracker etc 
+-- aber subclass/ new class heißt nicht, dass etwas beim tracker geändert werden muss e.g. stack and proc (mit 1 icon und 1 bar)  
+
 
 --- 
 EPT.name = "ExoYsProcSetTimer"
 EPT.version = "3.0.0"
 
+--- Class List 
+-- overview of all defined classes 
+-- used to iterate over classes for 
+--  + define classes from super-class
+--  + define config tables 
+--  + allocate subtables in saved variables 
 EPT.setTrackerClassList = {
     "proc", 
 }
@@ -48,26 +60,12 @@ local function OnSetChange( setId, changeType, _, _, activeType )
         EPT.setTracker:DeactivateObj( setId ) 
     end 
 
+    --- active bars of set changed, but it remained "activated"
     if changeType == LSD_CHANGE_TYPE_UPDATED then 
         
     end
 end
 
-
-
---[[ Config ]]
-
---- @ToDo naming and placement --> probably to handler?  
-
-function EPT.BuildSetTrackerClassConfigs() 
-    local SetTrackerConfig = EPT.configs.setTracker
-    local SetTrackerDefault = EPT.defaults.setTracker
-    SetTrackerConfig["main"] = setmetatable(EPT.sv.p.setTracker.main, {__index = SetTrackerDefault.main})
-    for _, class in ipairs( EPT.setTrackerClassList ) do 
-        local classConfigDefault = setmetatable( SetTrackerDefault[class], {__index = SetTrackerConfig["main"]} )
-        SetTrackerConfig[ class ] = setmetatable(EPT.sv.p.setTracker.classes[class], {__index = classConfigDefault } )
-    end    
-end
 
 --[[ -------------------- ]]
 --[[ -- Initialization -- ]]
@@ -125,9 +123,8 @@ local function Initialize()
         profileDefaults = EPT.defaults.profile,
         OnProfileChange = function(newProfile, oldProfile) 
             LibExoY.Print(newProfile, "EPT-ProfileChange") 
-            d("Rebuild Class Config")
-            EPT.BuildSetTrackerClassConfigs()
-            ---@ToDo each tracker needs to rebuild its individual config table and then apply the settings
+            EPT.setTracker:BuildConfigTemplates() 
+            EPT.setTracker:UpdateConfigs() 
         end, 
         OnProfileListUpdate = function( newList ) LibExoY.Print("Profile List Update", "EPT") d(newList) end,  
         
@@ -159,16 +156,8 @@ local function Initialize()
     SetTracker = EPT.setTracker -- changed to handler 
 
 
-    --- Build Config Tables  
-    EPT.configs = {}
-
-    --- @ToDo passt noch nicht ganzm weil so brauch ich schon in den sv eine tabelle für jede config, auch wenn sie leer ist (potentiell das gleiche für sets) 
-    -- aber die class liste wäre erst nach der Handler definition verfügbar, bräuchte sie aber für die erzeugung der default 
-    --. tabelle für die sv 
-    EPT.configs["setTracker"] = {} 
-    EPT.BuildSetTrackerClassConfigs()
-    --- @ToDo or something like
-    SetTracker:BuildClassConfigs() 
+    --- Build Config Templates  
+    --SetTracker:BuildConfigTemplates() 
     
     
     --- Register with LibSetDetection 
@@ -200,39 +189,7 @@ local function Initialize()
             end,
         }, 
     }
-    local tmpCmd = function() --- testing config concept
-        local defaults = EPT.defaults.setTracker
-        local config = EPT.configs.setTracker["proc"] 
-        LibExoY.Print("Config Test", "EPT")
-        local function printState() 
-        d("default values") 
-        d(defaults)
-        d("----")
-        d("saved variables") 
-        d(EPT.sv.p.setTracker) 
-        d("----")
-        d("config values") 
-        d(config.size) 
-        d(config.color) 
-        d("----") 
-        end
-        printState() 
-        
-        --routine = "addSV"
-        if routine == "addSV" then 
-            LibExoY.Print("add to saved vars", "EPT")
-            d("size to 20")
-            EPT.sv.p.setTracker.main.size = 20
-            d("color to blue")
-            EPT.sv.p.setTracker.classes.proc.color = "blue"  
-            printState() 
-        elseif routine == "deleteSV" then 
-            LibExoY.Print("reset sv values to default ", "EPT")   
-            EPT.sv.p.setTracker.main.size = nil
-            EPT.sv.p.setTracker.classes.proc.color = nil
-            printState()   
-        end
-
+    local tmpCmd = function() 
     end
     LibExoY.AddSlashCmd( "/ept", tmpCmd)--, "ExoYsProcSetTimer - ChatCommands", subCmdTable)
 
