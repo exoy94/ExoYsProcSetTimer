@@ -26,7 +26,7 @@ function SetTrackerProc:Initialize( )
         cooldown = GetAbilityCooldown( self.setData.procId ),
     }
     local setDataMeta = getmetatable( self.setData ) 
-    LibExoY.DeepMergeTables( setDataMeta.__index, setDataMetaIndex )
+    LibExoY.DeepMergeTables( setDataMeta.__index, setDataMetaIndex ) -- adding entries to the meta table 
 
     self.procData = {
         eventName = self.name.."_Event",

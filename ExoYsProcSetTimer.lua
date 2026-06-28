@@ -12,7 +12,8 @@ local EM = GetEventManager()
 
 --[[ Notes ]]
 --- Task-List 
--- [ ] change to new lsd constants
+-- [x] change to new lsd constants
+-- [ ] build addon/ init tables... move explanation/ concepts there
 -- [ ] check which event (2240 or 2245) is more working for more sets for basic proc 
 -- [ ] update naming in slider and add resize function
 -- [ ] profile change in customizer 
@@ -27,8 +28,13 @@ local EM = GetEventManager()
 --  zählt das set zu special sets  / subclass e.g. second icon, second tracker etc 
 -- aber subclass/ new class heißt nicht, dass etwas beim tracker geändert werden muss e.g. stack and proc (mit 1 icon und 1 bar)  
 
+--- Configuration 
+-- advanced implementation of settings, enables inheritance structure 
+-- only settings different to the default values are written to saved variables to reduce file-size 
+-- templates for each classes are defined in handler based on current profile 'BuildConfigTemplate()'
+--    and saved in EPT.defaults.setTracker
+-- each class instance has its own config table 'BuildConfigTable()'
 
---- 
 EPT.name = "ExoYsProcSetTimer"
 EPT.version = "3.0.0"
 
@@ -76,7 +82,6 @@ EPT.defaults = EPT.defaults or {}
 
 EPT.defaults["global"] = {
 
-
 } 
 
 EPT.defaults["profile"] = {
@@ -86,6 +91,7 @@ EPT.defaults["profile"] = {
         sets = {},
     }
 } 
+
 
 do 
     for _, class in ipairs( EPT.setTrackerClassList ) do 
@@ -115,7 +121,7 @@ local function Initialize()
 
     --- Saved Variables 
     local AddonSettingsParameter = {
-        name =  EPT.name,-- will build sv name and panel name from that 
+        name =  EPT.name,
         displayName = "|c00FF00ExoY|rs Proc Set Timer", -- for menu and dialogs 
 
         --- Saved Variables 
@@ -124,7 +130,7 @@ local function Initialize()
         profileDefaults = EPT.defaults.profile,
         OnProfileChange = function(newProfile, oldProfile) 
             LibExoY.Print(newProfile, "EPT-ProfileChange") 
-            EPT.setTracker:BuildConfigTemplates() 
+            EPT.setTracker:BuildConfigTemplates()   
             EPT.setTracker:UpdateConfigs() 
         end, 
         OnProfileListUpdate = function( newList ) LibExoY.Print("Profile List Update", "EPT") d(newList) end,  
@@ -138,13 +144,13 @@ local function Initialize()
     EPT.sv, EPT.pm = LibExoY.InitializeAddonSettings( AddonSettingsParameter )
 
     --- User Interace 
-    EPT.ui = {}
+    EPT.ui = {} 
     EPT.ui.customizer = EPT.userInterface.customizer:New( EPT.name.."_Customizer" ) 
-    EPT.userInterface = nil 
+    EPT.userInterface = nil -- clean up initialization distribution table 
 
-    --- SetTracker 
+    --- SetTracker Class Definitions
     -- initialize handler and classes 
-    local SetTracker = EPT.setTrackerClass  -- distribution table for initializatino 
+    local SetTracker = EPT.setTrackerClass  -- distribution table for initializatin
     EPT.setTracker = SetTracker.handler:New() 
     -- define subclass for each set-type (main is superclass)
     for _, class in ipairs( EPT.setTrackerClassList ) do 
@@ -153,12 +159,13 @@ local function Initialize()
     --EPT.setTracker.classes.proc = SetTracker.main:New( SetTracker["proc"] )   --- Replaced by previous loop 
     -- table for sets with special behavior to define individual classes instances
     EPT.setTracker.specialSets = SetTracker.specialSets or {}
-    EPT.setTrackerClass = nil   -- clean up distribution table for initialization 
+    EPT.setTrackerClass = nil   -- clean up initialization distribution table 
     SetTracker = EPT.setTracker -- changed to handler 
 
 
     --- Build Config Templates  
-    --SetTracker:BuildConfigTemplates() 
+    EPT.defaults.setTracker.sets = {}   -- 
+    SetTracker:BuildConfigTemplates() 
     
     
     --- Register with LibSetDetection 
@@ -173,11 +180,11 @@ local function Initialize()
         end
     end  
 
-    
+
     --- Register Events 
     -- combat state 
 
-    --- Slash Commands 
+    --- Slash Commands @todo
     local subCmdTable = {
         ["supportedSets"] = { 
             info = "lists all supported sets", 
@@ -196,7 +203,6 @@ local function Initialize()
     LibExoY.AddSlashCmd( "/ept", tmpCmd)--, "ExoYsProcSetTimer - ChatCommands", subCmdTable)
 
 end
-
 
 
 local function OnAddonLoaded(_, addonName)

@@ -101,6 +101,6 @@ function SetTrackerHandler:UpdateConfigs()
     for _, setId in ipairs( self.activeObjects ) do 
         local obj = self.objectRegistry[setId] 
         obj:BuildConfigTable() 
-        --obj:ApplyConfigs() --- @ToDo 
+        --obj:ApplyConfigs() --- @toDo 
     end
 end

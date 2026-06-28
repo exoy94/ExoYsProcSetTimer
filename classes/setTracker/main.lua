@@ -19,30 +19,28 @@ EPT.defaults.setTracker["main"] = {
 
 
 
---- Constructor for subclasses and tracker objects 
+--- Constructor for SetTracker-Classes  
 -- definition of classes when *setId* = nil 
 -- Obj also used to define subclasses for special sets 
-function SetTrackerMain:New( obj, setId ) 
-    obj = setmetatable(obj or {}, self)
+function SetTrackerMain:New( Obj, setId ) 
+    Obj = setmetatable(Obj or {}, self)
     self.__index = self 
 
     if setId then 
         -- general properties relevant for every tracker objet 
-        obj.setId = setId 
-        obj.name = "EPT_SetTracker_"..tostring(setId)
-        obj.sceneFragments = {} -- table of fragements for scenes 
-        -- setData properties for every tracker object 
-        -- class specific variables defined in class-initialization routine
+        Obj.setId = setId 
+        Obj.name = "EPT_SetTracker_"..tostring(setId)   -- used for controlls 
+        Obj.sceneFragments = {} -- table of fragements for scenes 
+        -- setData properties for every tracker object provided as metatable
         local setDataMetaIndex = { 
             setName = LSD.GetSetName( setId ), 
             setType = LSD.GetSetType( setId ), 
         }
-        obj.setData = setmetatable( EPT.GetSetData( setId ), {__index = setDataMetaIndex} )
+        -- class specific variables are defined in class-initialization routine
+        Obj.setData = setmetatable( EPT.GetSetData( setId ), {__index = setDataMetaIndex} )
+        Obj:BuildConfigTable() 
     end
-
-    obj:BuildConfigTable() 
-
-    return obj
+    return Obj
 end
 
 
@@ -61,16 +59,16 @@ function SetTrackerMain:Deactivate()
 end
 
 -- every setTrackerObj has a "sceneFragments" table, defined in constructor
--- scenes ("hud" and "hudui") are hardcoded and applied to all fragments 
+-- scenes ("hud" and "hudui") are hardcoded and applied to all fragments for now @todo
 function SetTrackerMain:AddToScenes() 
-    for _, fragment in ipairs( self.sceneFragements) do 
+    for _, fragment in ipairs( self.sceneFragments) do 
         HUD_UI_SCENE:AddFragment( fragment )
         HUD_SCENE:AddFragment( fragment )
     end
 end
 
 function SetTrackerMain:RemoveFromScenes() 
-    for _, fragment in ipairs( self.sceneFragements) do 
+    for _, fragment in ipairs( self.sceneFragments) do 
         HUD_UI_SCENE:RemoveFragment( fragment )
         HUD_SCENE:RemoveFragment( fragment )
     end
@@ -78,11 +76,7 @@ end
 
 
 --- Configuration 
-
-
---- @ToDo not finalized >>> actually, move this to  
 function SetTrackerMain:BuildConfigTable() 
-    if true then return end --- @ToDo 
     local setId = self.setId 
     local class = EPT.GetSetClass( setId )
     
@@ -103,9 +97,9 @@ function SetTrackerMain:BuildConfigTable()
     if class == "special" then
         -- no class template 
         local setConfigDefault = setmetatable( setDefaults, {__index = templates[ "main" ]})
-        return  setmetatable( setSV, {__index = setConfigDefault })
+        self.config =   setmetatable( setSV, {__index = setConfigDefault })
     else 
         local setConfigDefault = setmetatable( setDefaults, {__index = templates[ class ]})
-        return  setmetatable( setSV, {__index = setConfigDefault })
+        self.config =   setmetatable( setSV, {__index = setConfigDefault })
     end 
 end
