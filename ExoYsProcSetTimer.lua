@@ -34,18 +34,6 @@ local EM = GetEventManager()
 --    and saved in EPT.defaults.setTracker
 -- each class instance has its own config table 'BuildConfigTable()'
 
-EPT.name = "ExoYsProcSetTimer"
-EPT.version = "3.0.0"
-
---- Class List 
--- overview of all defined classes 
--- used to iterate over classes for 
---  + define classes from super-class
---  + define config tables 
---  + allocate subtables in saved variables 
-EPT.setTrackerClassList = {
-    "proc", 
-}
 
 --[[ ------------ ]]
 --[[ -- Events -- ]]
@@ -76,29 +64,6 @@ end
 --[[ -------------------- ]]
 --[[ -- Initialization -- ]]
 --[[ -------------------- ]]
-
-EPT.defaults = EPT.defaults or {} 
-
-EPT.defaults["global"] = {
-
-} 
-
-EPT.defaults["profile"] = {
-    setTracker = {
-        main = {},
-        classes = {}, -- contains subtables for each subclass 
-        sets = {},
-    }
-} 
-
-
-do 
-    for _, class in ipairs( EPT.setTrackerClassList ) do 
-        EPT.defaults.profile.setTracker.classes[class] = {}
-    end
-end
-
-
 
 local function Initialize() 
 
