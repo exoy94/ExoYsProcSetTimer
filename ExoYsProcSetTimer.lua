@@ -108,7 +108,7 @@ local function Initialize()
         profileSettingsControls = { },
         esoui = "info2783-ExoYsProcSetTimer.html", 
     }  
-    EPT.sv, EPT.pm = LibExoY.InitializeAddonSettings( AddonSettingsParameter )
+    EPT.savedVariables, EPT.profileManager = LibExoY.InitializeAddonSettings( AddonSettingsParameter )
 
     --- User Interace 
     EPT.userInterface = {} 

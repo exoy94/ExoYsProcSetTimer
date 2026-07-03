@@ -89,10 +89,10 @@ function SetTrackerHandler:BuildConfigTemplates()
     local defaults = EPT.defaults.setTracker 
     
     local defaults = EPT.defaults.setTracker
-    config["main"] = setmetatable(EPT.sv.p.setTracker.main, {__index = defaults.main})
+    config["main"] = setmetatable(EPT.savedVariables.p.setTracker.main, {__index = defaults.main})
     for _, class in ipairs( EPT.setTrackerClassList ) do 
         local classConfigDefault = setmetatable( defaults[class], {__index = config["main"]} )
-        config[ class ] = setmetatable(EPT.sv.p.setTracker.classes[class], {__index = classConfigDefault } )
+        config[ class ] = setmetatable(EPT.savedVariables.p.setTracker.classes[class], {__index = classConfigDefault } )
     end        
 end
 

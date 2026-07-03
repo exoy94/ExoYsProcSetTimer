@@ -303,8 +303,8 @@ function Customizer:CreateSelection( )
     --- Profile Selection 
     --local 
     local profileSelectionConfig = {
-        choices = EPT.pm:GetProfileList(),
-        -- for current value:  EPT.pm:GetActiveProfileName()
+        choices = EPT.profileManager:GetProfileList(),
+        -- for current value:  EPT.profileManager:GetActiveProfileName()
         offsetX = 50,
         offsetY = 100, 
         OnItemSelected = function(_, selected) LibExoY.Print("Change Profile", "EPT-Customizer") end,  

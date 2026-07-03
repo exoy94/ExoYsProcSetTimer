@@ -80,7 +80,7 @@ function SetTrackerMain:BuildConfigTable()
     local templates = EPT.setTracker.configTemplates
 
     -- loading set specific save variables, if they exist
-    local setSV = EPT.sv.p.setTracker.sets[setId] or {}
+    local setSV = EPT.savedVariables.p.setTracker.sets[setId] or {}
 
     -- check if there are any set specific default values
     -- this in theory can also be the case without the set being a special class
