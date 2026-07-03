@@ -1,4 +1,4 @@
-ExoYsProcSetTimer = ExoYsProcSetTimer or {}
+--- Addon Namespace
 local EPT = ExoYsProcSetTimer 
 
 local EM = GetEventManager() 
@@ -9,11 +9,9 @@ local LSD = LibSetDetection
 
 --- Object Table 
 local SetTrackerProc = {}
-EPT.setTrackerClass = EPT.setTrackerClass or {}
-EPT.setTrackerClass.proc = SetTrackerProc 
 
-EPT.defaults = EPT.defaults or {} 
-EPT.defaults.setTracker = EPT.defaults.setTracker or {}
+--- Distribution Tables
+EPT.initialize.setTracker["proc"] = SetTrackerProc
 EPT.defaults.setTracker["proc"] = {
     color = "red", 
 }

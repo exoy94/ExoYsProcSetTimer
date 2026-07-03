@@ -9,7 +9,6 @@ local LSD_C = LSD.constants
 --- ZOS Objects 
 local EM = GetEventManager()
 
-
 --[[ Notes ]]
 --- Task-List 
 -- [x] change to new lsd constants
@@ -103,6 +102,9 @@ end
 
 local function Initialize() 
 
+    local Init = EPT.initialize
+    --- @todo corruption check
+
     --- Variable Definition (Temporary)
     if GetUnitDisplayName("player") == "@ExoY94" then EPT.debug = true end
 
@@ -149,23 +151,19 @@ local function Initialize()
     EPT.userInterface = nil -- clean up initialization distribution table 
 
     --- SetTracker Class Definitions
-    -- initialize handler and classes 
-    local SetTracker = EPT.setTrackerClass  -- distribution table for initializatin
-    EPT.setTracker = SetTracker.handler:New() 
-    -- define subclass for each set-type (main is superclass)
+        -- initialize handler 
+    EPT.setTracker = Init.setTracker.handler:New( ) 
+    -- define class (main is superclass)
     for _, class in ipairs( EPT.setTrackerClassList ) do 
-        EPT.setTracker.classes[class] = SetTracker.main:New( SetTracker[class] ) 
+        EPT.setTracker.classes[class] = Init.setTracker.main:New( Init.setTracker[class] ) 
     end 
-    --EPT.setTracker.classes.proc = SetTracker.main:New( SetTracker["proc"] )   --- Replaced by previous loop 
-    -- table for sets with special behavior to define individual classes instances
-    EPT.setTracker.specialSets = SetTracker.specialSets or {}
-    EPT.setTrackerClass = nil   -- clean up initialization distribution table 
-    SetTracker = EPT.setTracker -- changed to handler 
+    -- table for sets with special behavior to define subclasses
+    EPT.setTracker.specialSets = Init.setTracker.specialSets  
+
 
 
     --- Build Config Templates  
-    EPT.defaults.setTracker.sets = {}   -- 
-    SetTracker:BuildConfigTemplates() 
+    EPT.setTracker:BuildConfigTemplates() 
     
     
     --- Register with LibSetDetection 

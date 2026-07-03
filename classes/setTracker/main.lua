@@ -1,18 +1,15 @@
-ExoYsProcSetTimer = ExoYsProcSetTimer or {}
+--- Addon Namespace
 local EPT = ExoYsProcSetTimer 
 
 --- Libraries
 local LibExoY = LibExoYsUtilities
 local LSD = LibSetDetection
 
-
 --- Object Table
 local SetTrackerMain = {}
-EPT.setTrackerClass = EPT.setTrackerClass or {} -- distribution table for initialization
-EPT.setTrackerClass.main = SetTrackerMain 
 
-EPT.defaults = EPT.defaults or {} 
-EPT.defaults.setTracker = EPT.defaults.setTracker or {}
+--- Distribution Tables
+EPT.initialize.setTracker["main"] = SetTrackerMain
 EPT.defaults.setTracker["main"] = {
     size = 50,
 }

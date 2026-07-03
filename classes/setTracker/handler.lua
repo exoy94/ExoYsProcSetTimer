@@ -1,4 +1,4 @@
-ExoYsProcSetTimer = ExoYsProcSetTimer or {}
+--- Addon Namespace
 local EPT = ExoYsProcSetTimer 
 
 --- Libraries 
@@ -6,8 +6,9 @@ local LibExoY = LibExoYsUtilities
 
 --- Object Table 
 local SetTrackerHandler = {}    
-EPT.setTrackerClass = EPT.setTrackerClass or {}     -- distribution table for initialization 
-EPT.setTrackerClass.handler = SetTrackerHandler 
+
+--- Distribution Table 
+EPT.initialize.setTracker["handler"] = SetTrackerHandler
 
 --- Info 
 -- providdes all standard set classes  

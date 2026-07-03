@@ -1,13 +1,9 @@
-ExoYsProcSetTimer = ExoYsProcSetTimer or {}
+--- Addon Namespace
 local EPT = ExoYsProcSetTimer 
 
 
-EPT.setTrackerClass = EPT.setTrackerClass or {}
-EPT.setTrackerClass.specialSets = EPT.setTrackerClass.specialSets or {}
-
-
 local ZensRedress = {}
-EPT.setTrackerClass.specialSets[455] = ZensRedress
+EPT.initialize.setTracker.specialSets[455] = ZensRedress
 
 --- Note 
 --[[ 
