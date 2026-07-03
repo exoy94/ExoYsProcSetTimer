@@ -38,7 +38,6 @@ EPT.defaults.setTracker["sets"] = {}
 --[[ -- User Interfacer -- ]]
 --[[ --------------------- ]]
 
---- Distribution Table 
 EPT.initialize.userInterface = {} 
 
 

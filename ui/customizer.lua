@@ -1,5 +1,6 @@
-ExoYsProcSetTimer = ExoYsProcSetTimer or {}
-local EPT = ExoYsProcSetTimer  
+--- Addon Namespace
+local EPT = ExoYsProcSetTimer 
+
 
 --- Libraries 
 local LibExoY = LibExoYsUtilities
@@ -8,8 +9,9 @@ local WM = GetWindowManager()
 
 --- Object Table 
 local Customizer = {}
-EPT.userInterface = EPT.userInterface or {} -- distribution table for initialization 
-EPT.userInterface.customizer = Customizer
+
+--- Distribution Table 
+EPT.initialize.userInterface["customizer"] = Customizer
 
 
 

@@ -111,9 +111,8 @@ local function Initialize()
     EPT.sv, EPT.pm = LibExoY.InitializeAddonSettings( AddonSettingsParameter )
 
     --- User Interace 
-    EPT.ui = {} 
-    EPT.ui.customizer = EPT.userInterface.customizer:New( EPT.name.."_Customizer" ) 
-    EPT.userInterface = nil -- clean up initialization distribution table 
+    EPT.userInterface = {} 
+    EPT.userInterface["customizer"] = Init.userInterface.customizer:New( EPT.name.."_Customizer" ) 
 
     --- SetTracker Class Definitions
         -- initialize handler 
@@ -165,6 +164,8 @@ local function Initialize()
     end
     LibExoY.AddSlashCmd( "/ept", tmpCmd)--, "ExoYsProcSetTimer - ChatCommands", subCmdTable)
 
+    EPT.initialize = nil 
+    EPT.initalized = true 
 end
 
 
