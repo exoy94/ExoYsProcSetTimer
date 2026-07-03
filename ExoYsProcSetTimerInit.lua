@@ -1,5 +1,4 @@
 ExoYsProcSetTimer = {}
-
 local EPT = ExoYsProcSetTimer 
 
 --- Addon Variables 
@@ -28,8 +27,6 @@ EPT.setTrackerClassList = {
 EPT.initialize["setTracker"] = {} 
 EPT.initialize.setTracker["specialSets"] = {}
 
-
---- Defaults for Templates 
 EPT.defaults["setTracker"] = {}
 EPT.defaults.setTracker["sets"] = {}
 
@@ -46,17 +43,15 @@ EPT.initialize.userInterface = {}
 --[[ -- Saved Variables -- ]]
 --[[ --------------------- ]]
 
---- Global
 EPT.defaults["global"] = {
 
 } 
 
 
---- Profile
 EPT.defaults["profile"] = {
     setTracker = {
         main = {},
-        classes = {}, -- contains subtables for each subclass 
+        classes = {}, -- contains subtables for each class, initialized hereafter 
         sets = {},
     }
 } 
@@ -67,35 +62,3 @@ do
     end
 end
 
-
-
----@todo do i need those 
---[[ ---------------------- ]]
---[[ -- Global Constants -- ]]
---[[ ---------------------- ]]
-
---[[
-EPT_SET_CLASS_PROC = "proc"
-EPT_SET_TYPE_GROUP = "group"
-EPT_SET_TYPE_STACK = "stack"
-EPT_SET_TYPE_TOGGLE = "toggle"
-
-function EPT.GetSetTypeList() 
-    return {
-        EPT_SET_TYPE_PROC,
-        EPT_SET_TYPE_GROUP, 
-        EPT_SET_TYPE_STACK,  
-        EPT_SET_TYPE_STACK,
-    }
-end
-
-EPT_STACK_TYPE_SELF = 1
-EPT_STACK_TYPE_TARGET = 2 
-
-function EPT.GetStackTypeList() 
-    return {
-        EPT_STACK_TYPE_SELF = "self", 
-        EPT_STACK_TYPE_TARGET = "target", 
-    }
-end 
-]]
